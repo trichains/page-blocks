@@ -3,8 +3,8 @@
   "title": "Aula ao vivo: checkout que não perde venda",
   "locale": "pt-BR",
   "seo": {
-    "title": "Aula ao vivo: o checkout que não perde venda | 12/11",
-    "description": "Aula gratuita e ao vivo sobre os pontos onde funis de venda perdem pedidos: checkout, Pix, webhooks e e-mails de recuperação. 12 de novembro, 19h.",
+    "title": "Aula ao vivo: o checkout que não perde venda",
+    "description": "Aula gratuita e ao vivo sobre os pontos onde funis de venda perdem pedidos: checkout, Pix, webhooks e e-mails de recuperação. Toda quinta, às 19h.",
     "noIndex": false
   },
   "theme": {
@@ -14,18 +14,30 @@
     "fontPair": "technical"
   },
   "tracking": {
-    "events": [{ "trigger": "submit", "selector": "#inscricao form", "name": "webinar_signup_submit" }]
+    "events": [
+      {
+        "trigger": "submit",
+        "selector": "#inscricao form",
+        "name": "webinar_signup_submit"
+      }
+    ]
   },
   "blocks": [
     {
       "id": "hero",
       "type": "hero",
       "props": {
-        "eyebrow": "Aula gratuita e ao vivo · 12 de novembro, 19h (Brasília)",
+        "eyebrow": "Aula gratuita e ao vivo · toda quinta, 19h (Brasília)",
         "headline": "Seu funil não perde venda no anúncio. Perde no checkout.",
         "subheadline": "Em 60 minutos, vamos abrir um funil real e seguir o pedido do clique até o e-mail de confirmação, mostrando onde ele costuma quebrar: Pix que expira, webhook que chega duas vezes, cliente que nunca recebe o acesso.",
-        "primaryCta": { "label": "Quero me inscrever", "href": "#inscricao" },
-        "secondaryCta": { "label": "Ver o conteúdo", "href": "#conteudo" },
+        "primaryCta": {
+          "label": "Quero me inscrever",
+          "href": "#inscricao"
+        },
+        "secondaryCta": {
+          "label": "Ver o conteúdo",
+          "href": "#conteudo"
+        },
         "media": {
           "src": "/media/webinar-hero.webp",
           "alt": "Diagrama de um funil: anúncio, página de vendas, checkout, webhook e e-mail de acesso",
@@ -39,11 +51,14 @@
       "id": "inicio",
       "type": "countdown",
       "props": {
-        "label": "A aula começa em",
-        "mode": "fixed",
-        "deadline": "2026-11-12T22:00:00Z",
-        "expiredText": "A aula já aconteceu. Inscreva-se para receber a gravação.",
-        "cta": { "label": "Garantir minha vaga", "href": "#inscricao" }
+        "label": "O checklist bônus fica liberado para a sua inscrição por",
+        "mode": "evergreen",
+        "hours": 48,
+        "expiredText": "O prazo do bônus acabou, mas a inscrição para a aula continua aberta.",
+        "cta": {
+          "label": "Garantir minha vaga",
+          "href": "#inscricao"
+        }
       }
     },
     {
@@ -63,9 +78,24 @@
         "text": "O link da sala chega por e-mail no dia da aula. O WhatsApp é opcional e serve só para o lembrete de 1 hora antes.",
         "listId": "aula-checkout-nov26",
         "fields": [
-          { "name": "name", "label": "Nome", "placeholder": "Como você quer ser chamado", "required": true },
-          { "name": "email", "label": "E-mail", "placeholder": "voce@exemplo.com", "required": true },
-          { "name": "phone", "label": "WhatsApp", "placeholder": "(11) 91234-5678", "required": false }
+          {
+            "name": "name",
+            "label": "Nome",
+            "placeholder": "Como você quer ser chamado",
+            "required": true
+          },
+          {
+            "name": "email",
+            "label": "E-mail",
+            "placeholder": "voce@exemplo.com",
+            "required": true
+          },
+          {
+            "name": "phone",
+            "label": "WhatsApp",
+            "placeholder": "(11) 91234-5678",
+            "required": false
+          }
         ],
         "submitLabel": "Quero minha vaga",
         "consentText": "Aceito receber e-mails sobre esta aula. Dá para sair da lista a qualquer momento, pelo link no rodapé de cada e-mail.",
@@ -128,8 +158,14 @@
         "brand": "Funil sem Furo",
         "text": "Página de demonstração do Page Blocks. Evento e pessoas fictícios.",
         "links": [
-          { "label": "Inscrição", "href": "#inscricao" },
-          { "label": "Política de privacidade", "href": "#privacidade" }
+          {
+            "label": "Inscrição",
+            "href": "#inscricao"
+          },
+          {
+            "label": "Dúvidas",
+            "href": "#duvidas"
+          }
         ],
         "legal": "© 2026 Funil sem Furo (demo)."
       }

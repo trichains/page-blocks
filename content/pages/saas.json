@@ -21,8 +21,14 @@
         "eyebrow": "Inventory sync",
         "headline": "Stop selling the last one twice",
         "subheadline": "Stockroom keeps one stock count for your store, your marketplace listings and the shelf. When something sells anywhere, every channel updates within seconds.",
-        "primaryCta": { "label": "Start a 14-day trial", "href": "#pricing" },
-        "secondaryCta": { "label": "How it works", "href": "#how" },
+        "primaryCta": {
+          "label": "Start a 14-day trial",
+          "href": "#start-trial"
+        },
+        "secondaryCta": {
+          "label": "How it works",
+          "href": "#how"
+        },
         "media": {
           "src": "/media/saas-hero.webp",
           "alt": "Stockroom dashboard listing products with stock counts per channel and a low-stock warning",
@@ -38,14 +44,27 @@
       "props": {
         "heading": "Connects the channels small stores actually use",
         "items": [
-          { "name": "Online store" },
-          { "name": "Marketplaces" },
-          { "name": "Point of sale" },
-          { "name": "Spreadsheets" },
-          { "name": "Warehouse CSV" }
+          {
+            "name": "Online store"
+          },
+          {
+            "name": "Marketplaces"
+          },
+          {
+            "name": "Point of sale"
+          },
+          {
+            "name": "Spreadsheets"
+          },
+          {
+            "name": "Warehouse CSV"
+          }
         ]
       },
-      "visibility": { "hideOnMobile": true, "hideOnDesktop": false }
+      "visibility": {
+        "hideOnMobile": true,
+        "hideOnDesktop": false
+      }
     },
     {
       "id": "how",
@@ -101,7 +120,10 @@
             "period": "/month",
             "description": "Up to 250 products.",
             "features": ["All channels", "Two-way sync", "Low-stock alerts", "Email support"],
-            "cta": { "label": "Start trial", "href": "#trial-shelf" },
+            "cta": {
+              "label": "Start trial",
+              "href": "#start-trial"
+            },
             "highlight": false
           },
           {
@@ -115,7 +137,10 @@
               "Safety buffers per channel",
               "Change history (1 year)"
             ],
-            "cta": { "label": "Start trial", "href": "#trial-store" },
+            "cta": {
+              "label": "Start trial",
+              "href": "#start-trial"
+            },
             "highlight": true,
             "badge": "Most stores"
           },
@@ -125,11 +150,39 @@
             "period": "/month",
             "description": "Up to 20,000 products.",
             "features": ["Everything in Store", "Multiple locations", "CSV imports from your 3PL", "Priority support"],
-            "cta": { "label": "Start trial", "href": "#trial-warehouse" },
+            "cta": {
+              "label": "Start trial",
+              "href": "#start-trial"
+            },
             "highlight": false
           }
         ],
         "note": "14-day trial on every plan, no card required. Cancel from the settings page."
+      }
+    },
+    {
+      "id": "start-trial",
+      "type": "leadForm",
+      "props": {
+        "heading": "Start your 14-day trial",
+        "text": "Leave your email and we'll send the link to connect your first channel. No card needed.",
+        "listId": "stockroom-trial",
+        "fields": [
+          {
+            "name": "name",
+            "label": "Name",
+            "placeholder": "Your first name",
+            "required": false
+          },
+          {
+            "name": "email",
+            "label": "Work email",
+            "placeholder": "you@yourstore.com",
+            "required": true
+          }
+        ],
+        "submitLabel": "Send me the setup link",
+        "successMessage": "Check your inbox for the setup link. It takes about five minutes to connect your first channel."
       }
     },
     {
@@ -159,7 +212,10 @@
       "props": {
         "headline": "Try it on your real catalogue for two weeks",
         "text": "Connect a channel in about five minutes. No card needed for the trial.",
-        "cta": { "label": "Start a 14-day trial", "href": "#pricing" }
+        "cta": {
+          "label": "Start a 14-day trial",
+          "href": "#start-trial"
+        }
       }
     },
     {
@@ -169,9 +225,18 @@
         "brand": "Stockroom",
         "text": "Fictional product used to demo the light theme in Page Blocks.",
         "links": [
-          { "label": "Pricing", "href": "#pricing" },
-          { "label": "FAQ", "href": "#faq" },
-          { "label": "GitHub", "href": "https://github.com/trichains/page-blocks" }
+          {
+            "label": "Pricing",
+            "href": "#pricing"
+          },
+          {
+            "label": "FAQ",
+            "href": "#faq"
+          },
+          {
+            "label": "GitHub",
+            "href": "https://github.com/trichains/page-blocks"
+          }
         ],
         "legal": "© 2026 Stockroom (demo)."
       }

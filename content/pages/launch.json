@@ -3,7 +3,7 @@
   "title": "Tally 2.0 launch",
   "locale": "en",
   "seo": {
-    "title": "Tally 2.0: invoicing for freelancers, launch week pricing",
+    "title": "Tally 2.0: invoicing for freelancers, launch pricing",
     "description": "Tally 2.0 turns tracked hours into a sent invoice in under a minute. Recurring invoices, payment reminders and clean exports. Launch pricing this week.",
     "noIndex": false
   },
@@ -15,8 +15,16 @@
   },
   "tracking": {
     "events": [
-      { "trigger": "click", "selector": "#pricing a", "name": "pricing_plan_click" },
-      { "trigger": "click", "selector": "#faq summary", "name": "faq_open" }
+      {
+        "trigger": "click",
+        "selector": "#pricing a",
+        "name": "pricing_plan_click"
+      },
+      {
+        "trigger": "click",
+        "selector": "#faq summary",
+        "name": "faq_open"
+      }
     ]
   },
   "blocks": [
@@ -24,11 +32,17 @@
       "id": "hero",
       "type": "hero",
       "props": {
-        "eyebrow": "Tally 2.0 · launch week",
+        "eyebrow": "Tally 2.0 · launch pricing",
         "headline": "Send the invoice before you close the laptop",
         "subheadline": "Tally turns the hours you tracked today into an invoice your client can pay by card or transfer. 2.0 adds recurring invoices, automatic reminders and exports your accountant can open without asking you questions.",
-        "primaryCta": { "label": "Get launch pricing", "href": "#pricing" },
-        "secondaryCta": { "label": "Watch the 4-minute tour", "href": "#tour" },
+        "primaryCta": {
+          "label": "Get launch pricing",
+          "href": "#pricing"
+        },
+        "secondaryCta": {
+          "label": "Watch the 4-minute tour",
+          "href": "#tour"
+        },
         "media": {
           "src": "/media/launch-hero.webp",
           "alt": "Tally invoice screen showing three billable entries, a total of $2,340 and a Send button",
@@ -44,12 +58,24 @@
       "props": {
         "heading": "Bill in 40+ currencies, including",
         "items": [
-          { "name": "USD" },
-          { "name": "EUR" },
-          { "name": "GBP" },
-          { "name": "BRL" },
-          { "name": "CAD" },
-          { "name": "AUD" }
+          {
+            "name": "USD"
+          },
+          {
+            "name": "EUR"
+          },
+          {
+            "name": "GBP"
+          },
+          {
+            "name": "BRL"
+          },
+          {
+            "name": "CAD"
+          },
+          {
+            "name": "AUD"
+          }
         ]
       }
     },
@@ -114,11 +140,14 @@
       "id": "launch-timer",
       "type": "countdown",
       "props": {
-        "label": "Launch pricing for you ends in",
-        "mode": "evergreen",
-        "hours": 72,
+        "label": "Launch pricing ends in",
+        "mode": "fixed",
+        "deadline": "2028-03-31T23:59:00Z",
         "expiredText": "Launch pricing has ended. Regular plans are below.",
-        "cta": { "label": "See the plans", "href": "#pricing" }
+        "cta": {
+          "label": "See the plans",
+          "href": "#pricing"
+        }
       }
     },
     {
@@ -139,7 +168,10 @@
               "Payment reminders",
               "CSV and PDF exports"
             ],
-            "cta": { "label": "Start monthly", "href": "#signup-monthly" },
+            "cta": {
+              "label": "Start monthly",
+              "href": "#checkout"
+            },
             "highlight": false
           },
           {
@@ -153,7 +185,10 @@
               "Multi-currency totals",
               "Priority email support"
             ],
-            "cta": { "label": "Get the launch price", "href": "#signup-yearly" },
+            "cta": {
+              "label": "Get the launch price",
+              "href": "#checkout"
+            },
             "highlight": true,
             "badge": "Launch price"
           },
@@ -161,13 +196,25 @@
             "name": "Lifetime",
             "price": "$249",
             "period": "one-time",
-            "description": "Pay once. Includes every 2.x update.",
-            "features": ["Everything in Yearly", "All 2.x updates included", "Limited to launch week"],
-            "cta": { "label": "Buy lifetime", "href": "#signup-lifetime" },
+            "description": "Pay once. Includes every 2.x update. Offered only during launch pricing.",
+            "features": ["Everything in Yearly", "All 2.x updates included", "Only while launch pricing lasts"],
+            "cta": {
+              "label": "Buy lifetime",
+              "href": "#checkout"
+            },
             "highlight": false
           }
         ],
         "note": "Prices in USD. Local taxes are added at checkout. 30-day refund, no questions."
+      }
+    },
+    {
+      "id": "checkout",
+      "type": "richText",
+      "props": {
+        "heading": "About checkout",
+        "markdown": "This is a demo page, so the plan buttons stop here instead of opening a payment page.\n\nIn a real launch each button would link to its checkout (a Stripe Payment Link, a Hotmart or Kiwify product page, or your own `/checkout?plan=yearly` route). Point the `href` of each plan's button at that URL in the editor.\n\nQuestions first? Read the [FAQ](#faq).",
+        "width": "narrow"
       }
     },
     {
@@ -206,7 +253,7 @@
           },
           {
             "question": "What happens when the launch timer runs out?",
-            "answer": "The timer is counted from your first visit to this page. When it reaches zero, the Yearly plan goes back to $120 and the Lifetime plan is no longer offered."
+            "answer": "Launch pricing ends on the date under the timer. After that the Yearly plan goes back to $120 and the Lifetime plan is no longer offered. If you subscribe before then, your price stays locked."
           },
           {
             "question": "Does Tally take a cut of payments?",
@@ -229,8 +276,14 @@
       "props": {
         "headline": "Your next invoice could take less than a minute",
         "text": "Launch pricing is locked for as long as you stay subscribed. 30-day refund if it's not for you.",
-        "cta": { "label": "Get launch pricing", "href": "#pricing" },
-        "secondaryCta": { "label": "Read the FAQ", "href": "#faq" }
+        "cta": {
+          "label": "Get launch pricing",
+          "href": "#pricing"
+        },
+        "secondaryCta": {
+          "label": "Read the FAQ",
+          "href": "#faq"
+        }
       }
     },
     {
@@ -240,9 +293,18 @@
         "brand": "Tally",
         "text": "Invoicing for people who would rather be doing the work. Fictional product used to demo Page Blocks.",
         "links": [
-          { "label": "Pricing", "href": "#pricing" },
-          { "label": "FAQ", "href": "#faq" },
-          { "label": "Source on GitHub", "href": "https://github.com/trichains/page-blocks" }
+          {
+            "label": "Pricing",
+            "href": "#pricing"
+          },
+          {
+            "label": "FAQ",
+            "href": "#faq"
+          },
+          {
+            "label": "Source on GitHub",
+            "href": "https://github.com/trichains/page-blocks"
+          }
         ],
         "legal": "© 2026 Tally (demo). Built with Page Blocks."
       }
