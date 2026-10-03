@@ -21,7 +21,8 @@ export type MdBlock =
   | { type: "paragraph"; children: MdInline[] }
   | { type: "list"; ordered: boolean; items: MdInline[][] };
 
-const SAFE_HREF = /^(https?:\/\/[^\s]+|mailto:[^\s]+|#[\w-]*|\/(?!\/)[^\s]*)$/i;
+// Local paths may not start with "//" or "/\" (browsers treat both as protocol-relative).
+const SAFE_HREF = /^(https?:\/\/[^\s]+|mailto:[^\s]+|#[\w-]*|\/(?![/\\])[^\s\\]*)$/i;
 
 export function isSafeHref(href: string): boolean {
   return SAFE_HREF.test(href.trim());

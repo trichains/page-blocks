@@ -10,21 +10,27 @@ import { log } from "@/lib/server/log";
  */
 const eventSchema = z.object({
   name: z.string().regex(/^[a-z][a-z0-9_]{1,47}$/),
-  props: z.record(z.string().max(40), z.union([z.string().max(300), z.number(), z.boolean(), z.null()])).default({}),
+  props: z
+    .record(z.string().max(40), z.union([z.string().max(300), z.number(), z.boolean(), z.null()]))
+    .refine((p) => Object.keys(p).length <= 20, "Too many props")
+    .default({}),
   path: z.string().max(300).optional(),
   ts: z.number().int().optional(),
 });
 type StoredEvent = z.infer<typeof eventSchema> & { receivedAt: string };
 
 const events = ((globalThis as { __pbEvents?: StoredEvent[] }).__pbEvents ??= []);
+const MAX_BODY = 4096;
 const limiter = createRateLimiter({ limit: 120, windowMs: 60_000 });
 
 export async function POST(request: Request) {
   if (!limiter.check(clientIp(request.headers)).ok) return new NextResponse(null, { status: 429 });
+  const raw = await request.text();
+  if (raw.length > MAX_BODY) return NextResponse.json({ error: "Event too large" }, { status: 413 });
   let body: unknown;
   try {
-    // sendBeacon may send text/plain; parse the raw body either way.
-    body = JSON.parse(await request.text());
+    // Parse the raw text so the content-type (beacon Blob or fetch) doesn't matter.
+    body = JSON.parse(raw);
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }

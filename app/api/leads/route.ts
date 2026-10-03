@@ -7,6 +7,7 @@ import {
   forwardLead,
   listLeads,
   maskEmail,
+  maskName,
   maskPhone,
   storeLead,
   type StoredLead,
@@ -37,6 +38,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400, headers });
   }
 
+  // Honeypot filled: answer exactly like a real success (201 + id) so bots learn nothing, then drop it.
+  // Checked on the raw body, before validation, so invalid bot payloads get the same answer.
+  const honeypot = (body as { website?: unknown } | null)?.website;
+  if (typeof honeypot === "string" && honeypot.trim() !== "") {
+    log("info", "lead.honeypot", { requestId });
+    return NextResponse.json({ ok: true, id: crypto.randomUUID() }, { status: 201, headers });
+  }
+
   const parsed = leadSubmissionSchema.safeParse(body);
   if (!parsed.success) {
     const fields: Record<string, string> = {};
@@ -49,27 +58,23 @@ export async function POST(request: Request) {
   }
   const lead = parsed.data;
 
-  // Honeypot filled: answer like a success so bots don't learn anything, but drop it.
-  if (lead.website) {
-    log("info", "lead.honeypot", { requestId, pageSlug: lead.pageSlug });
-    return NextResponse.json({ ok: true }, { status: 200, headers });
-  }
-
   const check = checkAgainstForm(await getPage(lead.pageSlug), lead);
   if (!check.ok) {
     return NextResponse.json({ error: check.error, fields: check.fields }, { status: check.status, headers });
   }
 
+  // Only keep what the published form asks for; listId comes from the page, never from the client.
+  const asked = new Set(check.form.fields.map((field) => field.name));
   const stored: StoredLead = {
     id: crypto.randomUUID(),
     receivedAt: new Date().toISOString(),
     pageSlug: lead.pageSlug,
     blockId: lead.blockId,
-    listId: lead.listId,
-    name: lead.name,
+    listId: check.form.listId,
+    name: asked.has("name") ? lead.name : undefined,
     email: lead.email,
-    phone: lead.phone,
-    consent: lead.consent,
+    phone: asked.has("phone") ? lead.phone : undefined,
+    consent: check.form.consentText ? lead.consent : undefined,
   };
 
   const webhookUrl = process.env.LEADS_WEBHOOK_URL;
@@ -94,7 +99,7 @@ export async function POST(request: Request) {
 }
 
 /**
- * Sandbox only: lists leads held in memory, with email and phone masked.
+ * Sandbox only: lists leads held in memory, with name, email and phone masked.
  * Disabled when LEADS_WEBHOOK_URL is set, because then leads live in your automation.
  */
 export async function GET() {
@@ -103,7 +108,12 @@ export async function GET() {
   }
   return NextResponse.json({
     sandbox: true,
-    note: "Demo endpoint. Leads are kept in server memory (max 200) and reset on cold start. Emails and phones are masked.",
-    leads: listLeads().map((l) => ({ ...l, email: maskEmail(l.email), phone: maskPhone(l.phone) })),
+    note: "Demo endpoint. Leads are kept in server memory (max 200) and reset on cold start. Names, emails and phones are masked.",
+    leads: listLeads().map((l) => ({
+      ...l,
+      name: maskName(l.name),
+      email: maskEmail(l.email),
+      phone: maskPhone(l.phone),
+    })),
   });
 }

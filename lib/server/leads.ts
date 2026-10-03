@@ -40,6 +40,14 @@ export function maskEmail(email: string): string {
   return `${user.slice(0, 2)}***@${domain}`;
 }
 
+/** "Ana Souza" -> "Ana S." */
+export function maskName(name?: string): string | undefined {
+  if (!name) return undefined;
+  const [first, ...rest] = name.trim().split(/\s+/);
+  const last = rest.at(-1);
+  return last ? `${first} ${last[0]!.toUpperCase()}.` : first;
+}
+
 export function maskPhone(phone?: string): string | undefined {
   if (!phone) return undefined;
   const digits = phone.replace(/\D/g, "");
@@ -53,7 +61,9 @@ export function maskPhone(phone?: string): string | undefined {
 export function checkAgainstForm(
   page: PageDocument | null,
   lead: LeadSubmission,
-): { ok: true } | { ok: false; status: number; error: string; fields?: Record<string, string> } {
+):
+  | { ok: true; form: PropsOf<"leadForm"> }
+  | { ok: false; status: number; error: string; fields?: Record<string, string> } {
   if (!page) return { ok: false, status: 404, error: "Unknown page" };
   const block = page.blocks.find((b) => b.id === lead.blockId);
   if (!block || block.type !== "leadForm") return { ok: false, status: 404, error: "Unknown form" };
@@ -65,7 +75,7 @@ export function checkAgainstForm(
   if (props.consentText && lead.consent !== true) fields.consent = "Consent is required";
   if (Object.keys(fields).length)
     return { ok: false, status: 422, error: "Please check the highlighted fields.", fields };
-  return { ok: true };
+  return { ok: true, form: props };
 }
 
 /**

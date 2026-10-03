@@ -3,7 +3,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { leadSubmissionSchema } from "@/lib/lead-schema";
 import { pageSchema } from "@/lib/page-schema";
-import { checkAgainstForm, forwardLead, maskEmail, maskPhone, type StoredLead } from "@/lib/server/leads";
+import { checkAgainstForm, forwardLead, maskEmail, maskName, maskPhone, type StoredLead } from "@/lib/server/leads";
 
 const webinar = pageSchema.parse(
   JSON.parse(readFileSync(path.join(process.cwd(), "content/pages/webinar.json"), "utf8")),
@@ -40,7 +40,7 @@ describe("lead submission", () => {
   });
 
   it("checks required fields and consent against the published form", () => {
-    expect(checkAgainstForm(webinar, lead())).toEqual({ ok: true });
+    expect(checkAgainstForm(webinar, lead())).toMatchObject({ ok: true, form: { listId: "aula-checkout-nov26" } });
     const missing = checkAgainstForm(webinar, lead({ name: undefined, consent: false }));
     expect(missing).toMatchObject({
       ok: false,
@@ -58,6 +58,8 @@ describe("lead submission", () => {
     expect(maskEmail("ana.souza@example.com")).toBe("an***@example.com");
     expect(maskPhone("(11) 91234-5678")).toBe("***5678");
     expect(maskPhone(undefined)).toBeUndefined();
+    expect(maskName("Ana Paula Souza")).toBe("Ana S.");
+    expect(maskName("Ana")).toBe("Ana");
   });
 });
 

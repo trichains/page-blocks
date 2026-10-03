@@ -48,6 +48,7 @@ describe("markdown subset", () => {
       "JaVaScRiPt:alert(1)",
       "data:text/html,hi",
       "//evil.example",
+      "/\\evil.example",
       "vbscript:x",
     ]) {
       expect(isSafeHref(href)).toBe(false);

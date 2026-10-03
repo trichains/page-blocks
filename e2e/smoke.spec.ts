@@ -86,21 +86,31 @@ test("editor: add a block from the registry and reorder it with the keyboard but
 });
 
 test("lead form on /p/webinar submits and the lead shows up in GET /api/leads", async ({ page, request }) => {
-  const name = `E2E ${Date.now()}`;
+  const name = "Ana Souza";
   await page.goto("/p/webinar");
   const form = page.locator("#inscricao");
   await form.getByRole("textbox", { name: "Nome" }).fill(name);
   await form.getByRole("textbox", { name: "E-mail" }).fill("e2e@example.com");
   await form.getByLabel(/Aceito receber/).check();
+  const responsePromise = page.waitForResponse(
+    (r) => r.url().endsWith("/api/leads") && r.request().method() === "POST",
+  );
   await form.getByRole("button", { name: "Quero minha vaga" }).click();
+  const response = await responsePromise;
+  expect(response.status()).toBe(201);
+  const { id } = (await response.json()) as { id: string };
   await expect(form.getByRole("status")).toContainText("Inscrição confirmada");
 
   const res = await request.get("/api/leads");
   expect(res.ok()).toBe(true);
-  const body = (await res.json()) as { sandbox: boolean; leads: { name?: string; email: string; listId?: string }[] };
+  const body = (await res.json()) as {
+    sandbox: boolean;
+    leads: { id: string; name?: string; email: string; listId?: string }[];
+  };
   expect(body.sandbox).toBe(true);
-  const lead = body.leads.find((l) => l.name === name);
+  const lead = body.leads.find((l) => l.id === id);
   expect(lead).toBeDefined();
+  expect(lead!.name).toBe("Ana S.");
   expect(lead!.email).toBe("e2***@example.com");
   expect(lead!.listId).toBe("aula-checkout-nov26");
 });
@@ -122,7 +132,9 @@ test("leads API rejects invalid input and silently drops honeypot hits", async (
       website: "http://spam",
     },
   });
-  expect(bot.status()).toBe(200);
-  const leads = (await (await request.get("/api/leads")).json()).leads as { name?: string }[];
-  expect(leads.some((l) => l.name === "Bot")).toBe(false);
+  // Same answer as a real submission, but nothing is stored.
+  expect(bot.status()).toBe(201);
+  const { id } = (await bot.json()) as { id: string };
+  const leads = (await (await request.get("/api/leads")).json()).leads as { id: string }[];
+  expect(leads.some((l) => l.id === id)).toBe(false);
 });

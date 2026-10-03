@@ -4,6 +4,7 @@ import { z } from "zod";
 export const leadSubmissionSchema = z.object({
   pageSlug: z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/),
   blockId: z.string().regex(/^[a-z0-9][a-z0-9-]{0,47}$/),
+  /** Ignored by the API (the published form's listId is used); accepted for compatibility. */
   listId: z.string().max(48).optional(),
   name: z.string().trim().max(80).optional(),
   email: z.email("Enter a valid email").max(200),

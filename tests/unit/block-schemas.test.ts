@@ -48,6 +48,14 @@ describe("block schemas", () => {
     });
   }
 
+  it("rejects links that browsers would treat as protocol-relative", () => {
+    const cta = blockDefinitions.find((d) => d.type === "cta")!;
+    for (const href of ["//evil.example", "/\\evil.example", "javascript:alert(1)"]) {
+      expect(cta.props.safeParse({ headline: "x", cta: { label: "Go", href } }).success, href).toBe(false);
+    }
+    expect(cta.props.safeParse({ headline: "x", cta: { label: "Go", href: "/p/saas#pricing" } }).success).toBe(true);
+  });
+
   it("rejects image paths that are not local", () => {
     const hero = blockDefinitions.find((d) => d.type === "hero")!;
     const result = hero.props.safeParse({

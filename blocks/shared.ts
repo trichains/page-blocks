@@ -40,7 +40,8 @@ export const hrefSchema = z
   .trim()
   .min(1, "Link is required")
   .max(500)
-  .regex(/^(#[\w-]*|\/(?!\/)[^\s]*|https?:\/\/[^\s]+|mailto:[^\s]+)$/i, {
+  // "/\host" is rejected too: browsers normalise it to "//host" (an external link).
+  .regex(/^(#[\w-]*|\/(?![/\\])[^\s\\]*|https?:\/\/[^\s]+|mailto:[^\s]+)$/i, {
     message: "Use #anchor, /path, https://… or mailto:",
   });
 
