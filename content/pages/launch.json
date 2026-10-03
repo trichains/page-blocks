@@ -1,0 +1,251 @@
+{
+  "slug": "launch",
+  "title": "Tally 2.0 launch",
+  "locale": "en",
+  "seo": {
+    "title": "Tally 2.0: invoicing for freelancers, launch week pricing",
+    "description": "Tally 2.0 turns tracked hours into a sent invoice in under a minute. Recurring invoices, payment reminders and clean exports. Launch pricing this week.",
+    "noIndex": false
+  },
+  "theme": {
+    "accent": "#f2884b",
+    "background": "dark",
+    "radius": "medium",
+    "fontPair": "modern"
+  },
+  "tracking": {
+    "events": [
+      { "trigger": "click", "selector": "#pricing a", "name": "pricing_plan_click" },
+      { "trigger": "click", "selector": "#faq summary", "name": "faq_open" }
+    ]
+  },
+  "blocks": [
+    {
+      "id": "hero",
+      "type": "hero",
+      "props": {
+        "eyebrow": "Tally 2.0 · launch week",
+        "headline": "Send the invoice before you close the laptop",
+        "subheadline": "Tally turns the hours you tracked today into an invoice your client can pay by card or transfer. 2.0 adds recurring invoices, automatic reminders and exports your accountant can open without asking you questions.",
+        "primaryCta": { "label": "Get launch pricing", "href": "#pricing" },
+        "secondaryCta": { "label": "Watch the 4-minute tour", "href": "#tour" },
+        "media": {
+          "src": "/media/launch-hero.webp",
+          "alt": "Tally invoice screen showing three billable entries, a total of $2,340 and a Send button",
+          "width": 1200,
+          "height": 900
+        },
+        "align": "left"
+      }
+    },
+    {
+      "id": "currencies",
+      "type": "logos",
+      "props": {
+        "heading": "Bill in 40+ currencies, including",
+        "items": [
+          { "name": "USD" },
+          { "name": "EUR" },
+          { "name": "GBP" },
+          { "name": "BRL" },
+          { "name": "CAD" },
+          { "name": "AUD" }
+        ]
+      }
+    },
+    {
+      "id": "tour",
+      "type": "video",
+      "props": {
+        "heading": "From tracked hours to paid invoice in four minutes",
+        "url": "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
+        "title": "Tally 2.0 product tour",
+        "poster": {
+          "src": "/media/launch-poster.webp",
+          "alt": "Video poster: Tally 2.0 tour, 4 minutes",
+          "width": 1280,
+          "height": 720
+        },
+        "caption": "Demo note: the player uses Big Buck Bunny (Blender Foundation, CC BY 3.0) as a stand-in."
+      }
+    },
+    {
+      "id": "whats-new",
+      "type": "features",
+      "props": {
+        "heading": "What changed in 2.0",
+        "intro": "Most of these came straight from support emails. If you asked for one of them, thank you.",
+        "columns": 3,
+        "items": [
+          {
+            "icon": "refresh",
+            "title": "Recurring invoices",
+            "text": "Retainers go out on the 1st, or every other Friday, with the right line items and the hours you tracked attached."
+          },
+          {
+            "icon": "mail",
+            "title": "Polite reminders",
+            "text": "Choose when Tally nudges a client about an unpaid invoice: 3 days before, on the due date, a week late. You can edit every email."
+          },
+          {
+            "icon": "card",
+            "title": "Card and bank transfer",
+            "text": "Clients pay from the invoice link. Payouts go straight to your account; Tally never holds the money."
+          },
+          {
+            "icon": "chart",
+            "title": "Exports that make sense",
+            "text": "CSV and PDF exports grouped by client and tax rate, so the quarterly call with your accountant takes ten minutes."
+          },
+          {
+            "icon": "globe",
+            "title": "Multi-currency",
+            "text": "Invoice in the client's currency and see totals in yours, using the exchange rate from the day the invoice was paid."
+          },
+          {
+            "icon": "lock",
+            "title": "Your data, exportable",
+            "text": "Everything you put in Tally can be downloaded as JSON at any time. No support ticket needed."
+          }
+        ]
+      }
+    },
+    {
+      "id": "launch-timer",
+      "type": "countdown",
+      "props": {
+        "label": "Launch pricing for you ends in",
+        "mode": "evergreen",
+        "hours": 72,
+        "expiredText": "Launch pricing has ended. Regular plans are below.",
+        "cta": { "label": "See the plans", "href": "#pricing" }
+      }
+    },
+    {
+      "id": "pricing",
+      "type": "pricing",
+      "props": {
+        "heading": "Pick a plan, keep it as long as you like",
+        "intro": "Launch prices are locked for as long as your subscription stays active.",
+        "plans": [
+          {
+            "name": "Monthly",
+            "price": "$12",
+            "period": "/month",
+            "description": "For trying Tally on a few real clients.",
+            "features": [
+              "Unlimited invoices and clients",
+              "Card and bank transfer payments",
+              "Payment reminders",
+              "CSV and PDF exports"
+            ],
+            "cta": { "label": "Start monthly", "href": "#signup-monthly" },
+            "highlight": false
+          },
+          {
+            "name": "Yearly",
+            "price": "$96",
+            "period": "/year",
+            "description": "Same features, four months free. Most freelancers pick this.",
+            "features": [
+              "Everything in Monthly",
+              "Recurring invoices",
+              "Multi-currency totals",
+              "Priority email support"
+            ],
+            "cta": { "label": "Get the launch price", "href": "#signup-yearly" },
+            "highlight": true,
+            "badge": "Launch price"
+          },
+          {
+            "name": "Lifetime",
+            "price": "$249",
+            "period": "one-time",
+            "description": "Pay once. Includes every 2.x update.",
+            "features": ["Everything in Yearly", "All 2.x updates included", "Limited to launch week"],
+            "cta": { "label": "Buy lifetime", "href": "#signup-lifetime" },
+            "highlight": false
+          }
+        ],
+        "note": "Prices in USD. Local taxes are added at checkout. 30-day refund, no questions."
+      }
+    },
+    {
+      "id": "beta-users",
+      "type": "testimonials",
+      "props": {
+        "heading": "From the 2.0 beta",
+        "items": [
+          {
+            "quote": "Recurring invoices alone saved me the first-of-the-month ritual of copying last month's invoice and fixing the dates.",
+            "name": "Priya Raman",
+            "role": "Freelance UX writer"
+          },
+          {
+            "quote": "I turned on reminders for two clients who always paid late. Both paid on time the next month and I never had to write the awkward email.",
+            "name": "Daniel Okafor",
+            "role": "Motion designer"
+          },
+          {
+            "quote": "My accountant asked which tool made the export. That has never happened before.",
+            "name": "Lucía Ferreira",
+            "role": "Translator, EN/ES/PT"
+          }
+        ]
+      }
+    },
+    {
+      "id": "faq",
+      "type": "faq",
+      "props": {
+        "heading": "Questions before you buy",
+        "items": [
+          {
+            "question": "I'm on Tally 1.x. Do I have to pay again?",
+            "answer": "No. Existing subscriptions move to 2.0 automatically at the price you already pay. The Lifetime plan is new and optional."
+          },
+          {
+            "question": "What happens when the launch timer runs out?",
+            "answer": "The timer is counted from your first visit to this page. When it reaches zero, the Yearly plan goes back to $120 and the Lifetime plan is no longer offered."
+          },
+          {
+            "question": "Does Tally take a cut of payments?",
+            "answer": "No. You connect your own payment account and pay its normal processing fee. Tally doesn't add a percentage on top."
+          },
+          {
+            "question": "Can I leave and take my data with me?",
+            "answer": "Yes. Settings → Export downloads every client, invoice and time entry as JSON and CSV. It works even after your plan ends."
+          },
+          {
+            "question": "What is the refund policy?",
+            "answer": "Email us within 30 days of paying and we refund the full amount. You don't need to give a reason."
+          }
+        ]
+      }
+    },
+    {
+      "id": "final-cta",
+      "type": "cta",
+      "props": {
+        "headline": "Your next invoice could take less than a minute",
+        "text": "Launch pricing is locked for as long as you stay subscribed. 30-day refund if it's not for you.",
+        "cta": { "label": "Get launch pricing", "href": "#pricing" },
+        "secondaryCta": { "label": "Read the FAQ", "href": "#faq" }
+      }
+    },
+    {
+      "id": "footer",
+      "type": "footer",
+      "props": {
+        "brand": "Tally",
+        "text": "Invoicing for people who would rather be doing the work. Fictional product used to demo Page Blocks.",
+        "links": [
+          { "label": "Pricing", "href": "#pricing" },
+          { "label": "FAQ", "href": "#faq" },
+          { "label": "Source on GitHub", "href": "https://github.com/trichains/page-blocks" }
+        ],
+        "legal": "© 2026 Tally (demo). Built with Page Blocks."
+      }
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "slug": "webinar",
+  "title": "Aula ao vivo: checkout que não perde venda",
+  "locale": "pt-BR",
+  "seo": {
+    "title": "Aula ao vivo: o checkout que não perde venda | 12/11",
+    "description": "Aula gratuita e ao vivo sobre os pontos onde funis de venda perdem pedidos: checkout, Pix, webhooks e e-mails de recuperação. 12 de novembro, 19h.",
+    "noIndex": false
+  },
+  "theme": {
+    "accent": "#3fb68b",
+    "background": "dark",
+    "radius": "large",
+    "fontPair": "technical"
+  },
+  "tracking": {
+    "events": [{ "trigger": "submit", "selector": "#inscricao form", "name": "webinar_signup_submit" }]
+  },
+  "blocks": [
+    {
+      "id": "hero",
+      "type": "hero",
+      "props": {
+        "eyebrow": "Aula gratuita e ao vivo · 12 de novembro, 19h (Brasília)",
+        "headline": "Seu funil não perde venda no anúncio. Perde no checkout.",
+        "subheadline": "Em 60 minutos, vamos abrir um funil real e seguir o pedido do clique até o e-mail de confirmação, mostrando onde ele costuma quebrar: Pix que expira, webhook que chega duas vezes, cliente que nunca recebe o acesso.",
+        "primaryCta": { "label": "Quero me inscrever", "href": "#inscricao" },
+        "secondaryCta": { "label": "Ver o conteúdo", "href": "#conteudo" },
+        "media": {
+          "src": "/media/webinar-hero.webp",
+          "alt": "Diagrama de um funil: anúncio, página de vendas, checkout, webhook e e-mail de acesso",
+          "width": 1200,
+          "height": 900
+        },
+        "align": "left"
+      }
+    },
+    {
+      "id": "inicio",
+      "type": "countdown",
+      "props": {
+        "label": "A aula começa em",
+        "mode": "fixed",
+        "deadline": "2026-11-12T22:00:00Z",
+        "expiredText": "A aula já aconteceu. Inscreva-se para receber a gravação.",
+        "cta": { "label": "Garantir minha vaga", "href": "#inscricao" }
+      }
+    },
+    {
+      "id": "conteudo",
+      "type": "richText",
+      "props": {
+        "heading": "O que vamos ver",
+        "markdown": "Nada de teoria de funil. É a parte técnica que quase ninguém mostra:\n\n1. **Checkout:** os campos que mais fazem gente desistir e o que dá para tirar.\n2. **Pix e boleto:** como tratar pagamento pendente sem mandar acesso antes da hora.\n3. **Webhooks:** por que o mesmo evento chega duas vezes e como evitar entrega duplicada.\n4. **E-mails de recuperação:** quando disparar, e quando é melhor não disparar.\n\nNo final, você recebe o *checklist de 21 pontos* que uso para revisar funis antes de ligar o tráfego.\n\nA aula fica gravada por 7 dias para quem se inscrever.",
+        "width": "narrow"
+      }
+    },
+    {
+      "id": "inscricao",
+      "type": "leadForm",
+      "props": {
+        "heading": "Reserve sua vaga",
+        "text": "O link da sala chega por e-mail no dia da aula. O WhatsApp é opcional e serve só para o lembrete de 1 hora antes.",
+        "listId": "aula-checkout-nov26",
+        "fields": [
+          { "name": "name", "label": "Nome", "placeholder": "Como você quer ser chamado", "required": true },
+          { "name": "email", "label": "E-mail", "placeholder": "voce@exemplo.com", "required": true },
+          { "name": "phone", "label": "WhatsApp", "placeholder": "(11) 91234-5678", "required": false }
+        ],
+        "submitLabel": "Quero minha vaga",
+        "consentText": "Aceito receber e-mails sobre esta aula. Dá para sair da lista a qualquer momento, pelo link no rodapé de cada e-mail.",
+        "successMessage": "Inscrição confirmada. O link da sala e o checklist vão chegar no seu e-mail. Se não aparecer em 10 minutos, olhe a caixa de promoções."
+      }
+    },
+    {
+      "id": "turmas-anteriores",
+      "type": "testimonials",
+      "props": {
+        "heading": "Quem assistiu às edições anteriores",
+        "items": [
+          {
+            "quote": "Descobri que meu checkout pedia CPF e endereço para um produto digital. Tirei os dois campos na mesma semana.",
+            "name": "Juliana Martins",
+            "role": "Infoprodutora"
+          },
+          {
+            "quote": "A parte de webhook duplicado explicou um problema que eu tinha havia meses: cliente recebendo dois e-mails de acesso.",
+            "name": "Rafael Nogueira",
+            "role": "Gestor de tráfego"
+          },
+          {
+            "quote": "Direto e técnico, sem enrolação. Saí com uma lista de coisas para mudar no funil.",
+            "name": "Camila Prado",
+            "role": "Designer de lançamentos"
+          }
+        ]
+      }
+    },
+    {
+      "id": "duvidas",
+      "type": "faq",
+      "props": {
+        "heading": "Dúvidas frequentes",
+        "items": [
+          {
+            "question": "A aula é paga?",
+            "answer": "Não. É gratuita e ao vivo. No final eu apresento uma mentoria paga, mas a aula inteira funciona sem ela."
+          },
+          {
+            "question": "Preciso saber programar?",
+            "answer": "Não. Vou mostrar o que acontece por trás, mas o foco é você saber o que pedir para o seu time ou checar na sua plataforma."
+          },
+          {
+            "question": "Vai ter gravação?",
+            "answer": "Sim. Quem se inscrever recebe a gravação por e-mail, disponível por 7 dias."
+          },
+          {
+            "question": "Funciona para qualquer plataforma de checkout?",
+            "answer": "Os exemplos usam uma plataforma brasileira comum, mas os pontos valem para qualquer checkout que envie webhooks."
+          }
+        ]
+      }
+    },
+    {
+      "id": "rodape",
+      "type": "footer",
+      "props": {
+        "brand": "Funil sem Furo",
+        "text": "Página de demonstração do Page Blocks. Evento e pessoas fictícios.",
+        "links": [
+          { "label": "Inscrição", "href": "#inscricao" },
+          { "label": "Política de privacidade", "href": "#privacidade" }
+        ],
+        "legal": "© 2026 Funil sem Furo (demo)."
+      }
+    }
+  ]
+}
