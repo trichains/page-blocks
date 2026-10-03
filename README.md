@@ -1,5 +1,7 @@
 # Page Blocks
 
+[English](README.md) · [Português](README.pt-BR.md)
+
 Schema-driven landing page engine: pages are versioned JSON documents, rendered by a registry of typed blocks into static HTML, with an editor whose forms are generated from the same zod schemas.
 
 [![CI](https://github.com/trichains/page-blocks/actions/workflows/ci.yml/badge.svg)](https://github.com/trichains/page-blocks/actions/workflows/ci.yml)
