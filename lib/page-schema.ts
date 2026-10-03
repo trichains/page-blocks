@@ -68,7 +68,9 @@ export const pageBaseSchema = z.strictObject({
   seo: seoSchema,
   theme: themeSchema,
   tracking: z
-    .strictObject({ events: z.array(trackingEventSchema).max(30).default([]).meta({ label: "Events", itemLabel: "Event" }) })
+    .strictObject({
+      events: z.array(trackingEventSchema).max(30).default([]).meta({ label: "Events", itemLabel: "Event" }),
+    })
     .optional(),
   blocks: z.array(blockSchema).min(1, "A page needs at least one block").max(60),
 });
