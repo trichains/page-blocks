@@ -121,7 +121,7 @@ export function Editor({ published }: { published: PageDocument }) {
   ];
 
   return (
-    <div className="flex h-dvh min-h-[600px] flex-col bg-app-bg text-app-fg">
+    <div className="flex min-h-dvh flex-col xl:h-dvh xl:min-h-[640px] bg-app-bg text-app-fg">
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-app-border px-4 py-2">
         <Link href="/" className="text-sm font-semibold">
           Page Blocks
@@ -201,7 +201,7 @@ export function Editor({ published }: { published: PageDocument }) {
         </div>
       ) : null}
 
-      <div className="grid min-h-0 flex-1 grid-rows-[auto_1fr] xl:grid-cols-[minmax(560px,640px)_1fr] xl:grid-rows-1">
+      <div className="grid flex-1 xl:min-h-0 xl:grid-cols-[minmax(560px,640px)_1fr]">
         <div className="flex min-h-0 flex-col border-b border-app-border xl:border-r xl:border-b-0">
           <div role="tablist" aria-label="Editor views" className="flex gap-1 border-b border-app-border px-2 pt-2">
             {tabs.map((t) => (
@@ -220,10 +220,15 @@ export function Editor({ published }: { published: PageDocument }) {
             ))}
           </div>
 
-          <div id={`panel-${tab}`} role="tabpanel" aria-labelledby={`tab-${tab}`} className="min-h-0 flex-1">
+          <div
+            id={`panel-${tab}`}
+            role="tabpanel"
+            aria-labelledby={`tab-${tab}`}
+            className="h-[75vh] min-h-0 flex-1 xl:h-auto"
+          >
             {tab === "design" ? (
-              <div className="grid h-full min-h-0 grid-cols-1 sm:grid-cols-[220px_1fr]">
-                <div className="min-h-0 border-b border-app-border sm:border-r sm:border-b-0">
+              <div className="grid h-full min-h-0 grid-cols-1 grid-rows-[auto_minmax(0,1fr)] sm:grid-cols-[220px_1fr] sm:grid-rows-1">
+                <div className="max-h-[40vh] min-h-0 overflow-y-auto border-b sm:max-h-none border-app-border sm:border-r sm:border-b-0">
                   <BlockList
                     blocks={page.blocks}
                     selection={sel}
@@ -320,7 +325,7 @@ export function Editor({ published }: { published: PageDocument }) {
           </div>
         </div>
 
-        <div className="flex min-h-[70vh] flex-col xl:min-h-0">
+        <div className="flex h-[85vh] flex-col xl:h-auto xl:min-h-0">
           <div className="flex items-center justify-between border-b border-app-border px-3 py-2">
             <span className="text-xs font-semibold tracking-wide text-app-muted uppercase">Preview</span>
             <div role="group" aria-label="Preview width" className="flex rounded-md border border-app-border p-0.5">

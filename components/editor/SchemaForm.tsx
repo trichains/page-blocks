@@ -28,8 +28,8 @@ function fieldId(prefix: string, path: Path) {
   return `${prefix}-${formatPath(path) || "root"}`.replace(/[^\w-]/g, "_");
 }
 
-/** Strings longer than this (by schema maxLength) get a textarea instead of an input. */
-const TEXTAREA_THRESHOLD = 200;
+/** Free-text strings allowed to be longer than this get a textarea (unless `multiline` says so already). */
+const TEXTAREA_THRESHOLD = 600;
 
 /**
  * Form generated from a JSON Schema (itself generated from the block's zod schema):
@@ -158,7 +158,8 @@ function StringField({ schema, value, path, label, required, errors, idPrefix, o
   const id = fieldId(idPrefix, path);
   const error = errors[formatPath(path)];
   const text = typeof value === "string" ? value : "";
-  const multiline = schema.multiline || (schema.maxLength ?? 0) > TEXTAREA_THRESHOLD;
+  const multiline =
+    schema.multiline || (!schema.pattern && !schema.format && (schema.maxLength ?? 0) > TEXTAREA_THRESHOLD);
   const counter = schema.maxLength && schema.maxLength >= 60 ? `${text.length}/${schema.maxLength}` : undefined;
   const common = {
     id,
