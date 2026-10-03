@@ -202,6 +202,7 @@ export function BlockList({
                     type="button"
                     className={`${iconButton} hover:text-app-danger`}
                     onClick={() => {
+                      if (!window.confirm(`Delete the ${label} block "${block.id}"?`)) return;
                       dispatch({ type: "removeBlock", index: i });
                       if (selectedIndex >= i)
                         onSelect(

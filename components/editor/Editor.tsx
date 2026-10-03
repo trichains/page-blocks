@@ -98,7 +98,7 @@ export function Editor({ published }: { published: PageDocument }) {
       });
       return;
     }
-    dispatch({ type: "replace", page: json as DraftPage });
+    dispatch({ type: "replace", page: result.page as unknown as DraftPage });
     setRevision((r) => r + 1);
     setSelection({ kind: "block", index: 0 });
     setNotice({ tone: "info", text: `Imported ${file.name}.` });

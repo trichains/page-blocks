@@ -37,7 +37,7 @@ export function JsonPanel({ page, onApply }: { page: DraftPage; onApply: (page: 
       return;
     }
     setIssues([]);
-    onApply(json as DraftPage);
+    onApply(result.page as unknown as DraftPage);
   };
 
   const ok = !syntaxError && issues.length === 0;

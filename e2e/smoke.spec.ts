@@ -67,6 +67,21 @@ test("editor: change hero headline, preview updates, export downloads valid JSON
   expect(json.blocks[0].props.headline).toBe("Invoices that send themselves");
 });
 
+test("editor: a corrupted local draft is discarded instead of crashing", async ({ page }) => {
+  await page.goto("/editor/launch");
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "page-blocks:draft:v1:launch",
+      JSON.stringify({ slug: "launch", seo: {}, theme: {}, blocks: [null] }),
+    ),
+  );
+  await page.reload();
+  await expect(page.getByRole("region", { name: "Live preview" }).getByRole("heading", { level: 1 })).toHaveText(
+    "Send the invoice before you close the laptop",
+  );
+  expect(await page.evaluate(() => localStorage.getItem("page-blocks:draft:v1:launch"))).toBeNull();
+});
+
 test("editor: add a block from the registry and reorder it with the keyboard buttons", async ({ page }) => {
   await page.goto("/editor/saas");
   await page.evaluate(() => localStorage.clear());
