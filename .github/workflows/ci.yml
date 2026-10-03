@@ -19,7 +19,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      # npm install, not npm ci: lockfiles made on Windows omit Linux-only optional wasm deps (@emnapi/* via sharp-wasm32 / oxide-wasm32-wasi), so npm ci fails here.
+      - run: npm install --no-audit --no-fund
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run validate-content
@@ -36,7 +37,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      # npm install, not npm ci: lockfiles made on Windows omit Linux-only optional wasm deps (@emnapi/* via sharp-wasm32 / oxide-wasm32-wasi), so npm ci fails here.
+      - run: npm install --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
       - run: npm run build
       - run: npm run test:e2e
