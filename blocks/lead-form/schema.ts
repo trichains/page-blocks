@@ -15,7 +15,7 @@ export const leadFormBlock = defineBlock({
     interactive: true,
   },
   props: z
-    .object({
+    .strictObject({
       heading: line(120, "Heading"),
       text: paragraph(320, "Text").optional(),
       listId: z
@@ -26,7 +26,7 @@ export const leadFormBlock = defineBlock({
         .meta({ label: "List ID", description: "Sent with the lead so automations can route it" }),
       fields: z
         .array(
-          z.object({
+          z.strictObject({
             name: z.enum(LEAD_FIELD_NAMES).meta({ label: "Field" }),
             label: line(40, "Label"),
             placeholder: z.string().trim().max(60).optional().meta({ label: "Placeholder" }),

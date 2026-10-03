@@ -10,7 +10,7 @@ export const richTextBlock = defineBlock({
     category: "content",
     interactive: false,
   },
-  props: z.object({
+  props: z.strictObject({
     heading: z.string().trim().max(120).optional().meta({ label: "Heading" }),
     markdown: z.string().trim().min(1, "Text is required").max(6000).meta({
       label: "Text (markdown)",
@@ -21,7 +21,7 @@ export const richTextBlock = defineBlock({
   }),
   example: {
     heading: "About this offer",
-    markdown: "Write **plain, specific** copy.\n\n- One idea per bullet\n- Link to [details](#faq) when needed",
+    markdown: "Write **plain, specific** copy.\n\n- One idea per bullet\n- Link to [details](https://example.com) when needed",
     width: "narrow",
   },
 });

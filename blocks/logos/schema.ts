@@ -11,11 +11,11 @@ export const logosBlock = defineBlock({
     category: "content",
     interactive: false,
   },
-  props: z.object({
+  props: z.strictObject({
     heading: z.string().trim().max(100).optional().meta({ label: "Heading" }),
     items: z
       .array(
-        z.object({
+        z.strictObject({
           name: line(40, "Name"),
           logo: imageSchema
             .optional()

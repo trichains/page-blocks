@@ -11,11 +11,11 @@ export const testimonialsBlock = defineBlock({
     category: "content",
     interactive: false,
   },
-  props: z.object({
+  props: z.strictObject({
     heading: z.string().trim().max(100).optional().meta({ label: "Heading" }),
     items: z
       .array(
-        z.object({
+        z.strictObject({
           quote: paragraph(400, "Quote"),
           name: line(60, "Name"),
           role: z.string().trim().max(80).optional().meta({ label: "Role / company" }),

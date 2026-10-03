@@ -11,13 +11,13 @@ export const featuresBlock = defineBlock({
     category: "content",
     interactive: false,
   },
-  props: z.object({
+  props: z.strictObject({
     heading: line(100, "Heading"),
     intro: paragraph(280, "Intro").optional(),
     columns: z.number().int().min(2).max(4).default(3).meta({ label: "Columns on desktop" }),
     items: z
       .array(
-        z.object({
+        z.strictObject({
           icon: iconSchema.meta({ label: "Icon" }),
           title: line(60, "Title"),
           text: paragraph(240, "Text"),

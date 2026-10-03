@@ -11,11 +11,11 @@ export const faqBlock = defineBlock({
     category: "content",
     interactive: false,
   },
-  props: z.object({
+  props: z.strictObject({
     heading: line(100, "Heading"),
     items: z
       .array(
-        z.object({
+        z.strictObject({
           question: line(160, "Question"),
           answer: paragraph(1200, "Answer"),
         }),

@@ -11,12 +11,12 @@ export const pricingBlock = defineBlock({
     category: "conversion",
     interactive: false,
   },
-  props: z.object({
+  props: z.strictObject({
     heading: line(100, "Heading"),
     intro: paragraph(280, "Intro").optional(),
     plans: z
       .array(
-        z.object({
+        z.strictObject({
           name: line(40, "Plan name"),
           price: line(20, "Price"),
           period: z.string().trim().max(30).optional().meta({ label: "Period", description: "e.g. /month, one-time" }),

@@ -33,7 +33,7 @@ describe("block markup", () => {
     expect(html.match(/<h1/g)).toHaveLength(1);
     expect(html).toContain("Say what the page is about in one sentence");
     expect(html).toContain('data-track="cta_click"');
-    expect(html).toContain('href="#pricing"');
+    expect(html).toContain('href="#"');
   });
 
   it("hero image reserves its aspect ratio and is eager only as the first block", () => {

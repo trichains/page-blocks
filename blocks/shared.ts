@@ -45,7 +45,7 @@ export const hrefSchema = z
     message: "Use #anchor, /path, https://… or mailto:",
   });
 
-export const ctaSchema = z.object({
+export const ctaSchema = z.strictObject({
   label: z.string().trim().min(1, "Label is required").max(40).meta({ label: "Label" }),
   href: hrefSchema.meta({ label: "Link", description: "#anchor, /path or https://…" }),
 });
@@ -56,7 +56,7 @@ export type Cta = z.infer<typeof ctaSchema>;
  * remotePatterns allow-list. Width and height are required to reserve the
  * aspect ratio and avoid layout shift.
  */
-export const imageSchema = z.object({
+export const imageSchema = z.strictObject({
   src: z
     .string()
     .trim()
@@ -74,7 +74,7 @@ export type ImageAsset = z.infer<typeof imageSchema>;
 
 export const blockIdSchema = z.string().regex(/^[a-z0-9][a-z0-9-]{0,47}$/, "Lowercase letters, numbers and dashes");
 
-export const visibilitySchema = z.object({
+export const visibilitySchema = z.strictObject({
   hideOnMobile: z.boolean().default(false),
   hideOnDesktop: z.boolean().default(false),
 });

@@ -14,7 +14,7 @@ test("home lists the demo pages", async ({ page }) => {
 test("/p/launch renders the hero headline, OG image and click-to-load video", async ({ page, request }) => {
   await page.goto("/p/launch");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Send the invoice before you close the laptop");
-  await expect(page).toHaveTitle("Tally 2.0: invoicing for freelancers, launch week pricing");
+  await expect(page).toHaveTitle("Tally 2.0: invoicing for freelancers, launch pricing");
 
   const ogImage = await page.locator('meta[property="og:image"]').getAttribute("content");
   expect(ogImage).toContain("/p/launch/opengraph-image");

@@ -12,7 +12,7 @@ export const videoBlock = defineBlock({
     category: "media",
     interactive: true,
   },
-  props: z.object({
+  props: z.strictObject({
     heading: z.string().trim().max(120).optional().meta({ label: "Heading" }),
     url: z
       .string()

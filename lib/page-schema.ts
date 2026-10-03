@@ -10,7 +10,7 @@ export type FontPair = (typeof FONT_PAIRS)[number];
 
 export const RADII = ["none", "small", "medium", "large"] as const;
 
-export const seoSchema = z.object({
+export const seoSchema = z.strictObject({
   title: z
     .string()
     .trim()
@@ -30,7 +30,7 @@ export const seoSchema = z.object({
   noIndex: z.boolean().default(false).meta({ label: "Hide from search engines (noindex)" }),
 });
 
-export const themeSchema = z.object({
+export const themeSchema = z.strictObject({
   accent: z
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/, "Hex color like #f2884b")
@@ -42,7 +42,7 @@ export const themeSchema = z.object({
 export type Theme = z.infer<typeof themeSchema>;
 
 export const trackingEventSchema = z
-  .object({
+  .strictObject({
     trigger: z.enum(["view", "click", "submit"]).meta({ label: "Trigger" }),
     selector: z
       .string()
@@ -61,14 +61,14 @@ export const trackingEventSchema = z
     }
   });
 
-export const pageBaseSchema = z.object({
+export const pageBaseSchema = z.strictObject({
   slug: z.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/, "Lowercase letters, numbers and dashes"),
   title: z.string().trim().min(1).max(100).meta({ label: "Internal title" }),
   locale: z.enum(LOCALES).default("en").meta({ label: "Language" }),
   seo: seoSchema,
   theme: themeSchema,
   tracking: z
-    .object({ events: z.array(trackingEventSchema).max(30).default([]).meta({ label: "Events", itemLabel: "Event" }) })
+    .strictObject({ events: z.array(trackingEventSchema).max(30).default([]).meta({ label: "Events", itemLabel: "Event" }) })
     .optional(),
   blocks: z.array(blockSchema).min(1, "A page needs at least one block").max(60),
 });
@@ -90,7 +90,47 @@ export const pageSchema = pageBaseSchema.superRefine((page, ctx) => {
       seen.set(block.id, i);
     }
   });
+
+  // Every in-page anchor (#pricing) must point at a block on this page.
+  page.blocks.forEach((block, i) => {
+    for (const anchor of findAnchors(block.props, ["blocks", i, "props"])) {
+      if (!seen.has(anchor.id)) {
+        ctx.addIssue({
+          code: "custom",
+          path: anchor.path,
+          message: `Link "#${anchor.id}" doesn't match any block id on this page`,
+        });
+      }
+    }
+  });
 });
+
+const MARKDOWN_ANCHOR = /\]\(#([\w-]+)\)/g;
+
+/**
+ * Finds "#id" links in block props: `href` fields anywhere in the tree, plus
+ * [text](#id) links inside markdown strings. A bare "#" is allowed (placeholder).
+ */
+export function findAnchors(value: unknown, path: (string | number)[]): { id: string; path: (string | number)[] }[] {
+  const out: { id: string; path: (string | number)[] }[] = [];
+  const walk = (node: unknown, at: (string | number)[]) => {
+    if (Array.isArray(node)) {
+      node.forEach((item, i) => walk(item, [...at, i]));
+    } else if (node && typeof node === "object") {
+      for (const [key, child] of Object.entries(node)) {
+        if (key === "href" && typeof child === "string" && /^#[\w-]+$/.test(child)) {
+          out.push({ id: child.slice(1), path: [...at, key] });
+        } else if (key === "markdown" && typeof child === "string") {
+          for (const m of child.matchAll(MARKDOWN_ANCHOR)) out.push({ id: m[1], path: [...at, key] });
+        } else {
+          walk(child, [...at, key]);
+        }
+      }
+    }
+  };
+  walk(value, path);
+  return out;
+}
 
 export type PageDocument = z.infer<typeof pageSchema>;
 export type PageDocumentInput = z.input<typeof pageSchema>;

@@ -11,7 +11,7 @@ export const ctaBlock = defineBlock({
     category: "conversion",
     interactive: false,
   },
-  props: z.object({
+  props: z.strictObject({
     headline: line(120, "Headline"),
     text: paragraph(280, "Text").optional(),
     cta: ctaSchema.meta({ label: "Button" }),
@@ -20,6 +20,6 @@ export const ctaBlock = defineBlock({
   example: {
     headline: "Ready when you are",
     text: "Repeat the main promise and remove the last bit of risk.",
-    cta: { label: "Get started", href: "#pricing" },
+    cta: { label: "Get started", href: "#" },
   },
 });

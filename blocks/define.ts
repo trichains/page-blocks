@@ -27,7 +27,7 @@ export function defineBlock<const T extends string, P extends z.ZodObject>(def: 
   example: z.input<P>;
   meta: BlockMeta;
 }) {
-  const schema = z.object({
+  const schema = z.strictObject({
     id: blockIdSchema,
     type: z.literal(def.type),
     props: def.props,

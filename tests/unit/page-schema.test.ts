@@ -10,7 +10,7 @@ const base = {
   seo: { title: "Test", description: "A test page" },
   theme: { accent: "#f2884b" },
   blocks: [
-    { id: "hero", type: "hero", props: { headline: "Hello", primaryCta: { label: "Go", href: "#pricing" } } },
+    { id: "hero", type: "hero", props: { headline: "Hello", primaryCta: { label: "Go", href: "#cta" } } },
     { id: "cta", type: "cta", props: { headline: "Ready", cta: { label: "Go", href: "/p/test" } } },
   ],
 };
@@ -46,6 +46,55 @@ describe("page schema", () => {
   it("requires a selector for click tracking events", () => {
     const result = pageSchema.safeParse({ ...base, tracking: { events: [{ trigger: "click", name: "cta" }] } });
     expect(result.success).toBe(false);
+  });
+
+  it("rejects unknown keys at every level", () => {
+    const [hero, cta] = base.blocks;
+    const cases = [
+      { ...base, extra: true },
+      { ...base, seo: { ...base.seo, keywords: "x" } },
+      { ...base, blocks: [{ ...hero, color: "red" }, cta] },
+      { ...base, blocks: [{ ...hero, props: { ...hero.props, subtitle: "typo" } }, cta] },
+      {
+        ...base,
+        blocks: [
+          { ...hero, props: { ...hero.props, primaryCta: { label: "Go", href: "#cta", target: "_blank" } } },
+          cta,
+        ],
+      },
+    ];
+    for (const input of cases) {
+      const result = validatePage(input);
+      expect(result.ok).toBe(false);
+      if (!result.ok) expect(result.issues[0].message).toMatch(/Unrecognized key/i);
+    }
+  });
+
+  it("requires #anchors to match a block id on the page", () => {
+    const [hero, cta] = base.blocks;
+    const broken = validatePage({
+      ...base,
+      blocks: [{ ...hero, props: { ...hero.props, primaryCta: { label: "Go", href: "#pricing" } } }, cta],
+    });
+    expect(broken.ok).toBe(false);
+    if (!broken.ok) {
+      expect(broken.issues).toContainEqual({
+        path: "blocks[0].props.primaryCta.href",
+        message: 'Link "#pricing" doesn\'t match any block id on this page',
+      });
+    }
+    const markdown = validatePage({
+      ...base,
+      blocks: [...base.blocks, { id: "text", type: "richText", props: { markdown: "See [plans](#plans)." } }],
+    });
+    expect(markdown.ok).toBe(false);
+    // A bare "#" placeholder and links to existing blocks are fine.
+    expect(
+      validatePage({
+        ...base,
+        blocks: [{ ...hero, props: { ...hero.props, primaryCta: { label: "Go", href: "#" } } }, cta],
+      }).ok,
+    ).toBe(true);
   });
 
   it("formats zod paths for humans", () => {

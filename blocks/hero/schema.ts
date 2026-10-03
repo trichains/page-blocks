@@ -11,7 +11,7 @@ export const heroBlock = defineBlock({
     category: "content",
     interactive: false,
   },
-  props: z.object({
+  props: z.strictObject({
     eyebrow: z
       .string()
       .trim()
@@ -29,7 +29,7 @@ export const heroBlock = defineBlock({
     eyebrow: "New",
     headline: "Say what the page is about in one sentence",
     subheadline: "Explain who it is for and what changes for them after they click the button.",
-    primaryCta: { label: "Get started", href: "#pricing" },
+    primaryCta: { label: "Get started", href: "#" },
     align: "left",
   },
 });

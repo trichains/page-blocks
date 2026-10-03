@@ -11,11 +11,11 @@ export const footerBlock = defineBlock({
     category: "layout",
     interactive: false,
   },
-  props: z.object({
+  props: z.strictObject({
     brand: line(60, "Brand"),
     text: z.string().trim().max(200).optional().meta({ label: "Text" }),
     links: z
-      .array(z.object({ label: line(40, "Label"), href: hrefSchema.meta({ label: "Link" }) }))
+      .array(z.strictObject({ label: line(40, "Label"), href: hrefSchema.meta({ label: "Link" }) }))
       .max(8)
       .default([])
       .meta({ label: "Links", itemLabel: "Link" }),

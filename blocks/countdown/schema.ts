@@ -12,7 +12,7 @@ export const countdownBlock = defineBlock({
     interactive: true,
   },
   props: z
-    .object({
+    .strictObject({
       label: line(100, "Label"),
       mode: z.enum(["fixed", "evergreen"]).default("fixed").meta({ label: "Mode" }),
       deadline: z.iso
