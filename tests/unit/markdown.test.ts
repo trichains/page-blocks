@@ -58,8 +58,8 @@ describe("markdown subset", () => {
     }
   });
 
-  it("keeps safe links and marks external ones nofollow", () => {
-    expect(html("[docs](https://example.com)")).toContain('rel="noopener noreferrer nofollow"');
+  it("keeps safe links and opens external ones in a new tab", () => {
+    expect(html("[docs](https://example.com)")).toContain('target="_blank" rel="noopener noreferrer"');
     expect(html("[faq](#faq)")).toContain('href="#faq"');
     expect(html("[mail](mailto:hi@example.com)")).toContain('href="mailto:hi@example.com"');
   });

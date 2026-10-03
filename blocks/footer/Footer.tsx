@@ -1,4 +1,5 @@
 import type { BlockRenderProps } from "../types";
+import { externalLinkProps } from "../ui";
 
 export function Footer({ id, props }: BlockRenderProps<"footer">) {
   return (
@@ -13,7 +14,11 @@ export function Footer({ id, props }: BlockRenderProps<"footer">) {
             <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
               {props.links.map((link, i) => (
                 <li key={i}>
-                  <a href={link.href} className="text-pb-muted underline-offset-4 hover:text-pb-fg hover:underline">
+                  <a
+                    href={link.href}
+                    {...externalLinkProps(link.href)}
+                    className="text-pb-muted underline-offset-4 hover:text-pb-fg hover:underline"
+                  >
                     {link.label}
                   </a>
                 </li>

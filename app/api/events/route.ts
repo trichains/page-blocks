@@ -20,13 +20,16 @@ const eventSchema = z.object({
 type StoredEvent = z.infer<typeof eventSchema> & { receivedAt: string };
 
 const events = ((globalThis as { __pbEvents?: StoredEvent[] }).__pbEvents ??= []);
-const MAX_BODY = 4096;
+const MAX_BODY = 4096; // bytes
 const limiter = createRateLimiter({ limit: 120, windowMs: 60_000 });
 
 export async function POST(request: Request) {
   if (!limiter.check(clientIp(request.headers)).ok) return new NextResponse(null, { status: 429 });
+  // Reject on the declared size first, then on the real byte length (the header can be missing or wrong).
+  const declared = Number(request.headers.get("content-length") ?? 0);
+  if (declared > MAX_BODY) return tooLarge();
   const raw = await request.text();
-  if (raw.length > MAX_BODY) return NextResponse.json({ error: "Event too large" }, { status: 413 });
+  if (new TextEncoder().encode(raw).byteLength > MAX_BODY) return tooLarge();
   let body: unknown;
   try {
     // Parse the raw text so the content-type (beacon Blob or fetch) doesn't matter.
@@ -44,7 +47,13 @@ export async function POST(request: Request) {
   return new NextResponse(null, { status: 204 });
 }
 
+const tooLarge = () => NextResponse.json({ error: "Event too large" }, { status: 413 });
+
+/** Sandbox only: disabled when events go to your own collector. */
 export async function GET() {
+  if (process.env.NEXT_PUBLIC_ANALYTICS_ENDPOINT) {
+    return NextResponse.json({ error: "Event listing is only available in sandbox mode." }, { status: 404 });
+  }
   return NextResponse.json({
     sandbox: true,
     note: "Demo endpoint. Last 200 tracked events, kept in server memory and reset on cold start.",

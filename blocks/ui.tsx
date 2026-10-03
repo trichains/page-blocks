@@ -68,18 +68,25 @@ export function CtaLink({
     variant === "primary"
       ? "bg-pb-accent text-pb-accent-fg hover:opacity-90"
       : "border border-pb-border text-pb-fg hover:border-pb-muted";
-  const external = /^https?:\/\//i.test(cta.href);
   return (
     <a
       href={cta.href}
       className={`${base} ${sizes} ${variants}`}
       data-track="cta_click"
       data-track-label={cta.label}
-      {...(external ? { rel: "noopener" } : {})}
+      {...externalLinkProps(cta.href)}
     >
       {cta.label}
     </a>
   );
+}
+
+/**
+ * One rule for links that leave the page (CTAs, footer, markdown): new tab, no opener,
+ * no referrer. Anchors and local paths stay in the same tab.
+ */
+export function externalLinkProps(href: string): { target?: "_blank"; rel?: string } {
+  return /^https?:\/\//i.test(href) ? { target: "_blank", rel: "noopener noreferrer" } : {};
 }
 
 export function headingId(blockId: string) {

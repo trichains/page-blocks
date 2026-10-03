@@ -43,7 +43,7 @@ export function SeoPanel({
         <code className="text-app-fg">app/p/[slug]/opengraph-image.tsx</code>.{" "}
         <a
           className="text-app-accent underline"
-          href={`/p/${page.slug}/opengraph-image`}
+          href={`/p/${page.slug}/opengraph-image/og`}
           target="_blank"
           rel="noreferrer"
         >

@@ -2,12 +2,17 @@ import { ImageResponse } from "next/og";
 import { getPage, listSlugs } from "@/lib/content/pages";
 import { accentForeground, themeBackground, themeForeground } from "@/lib/theme";
 
-export const alt = "Page preview";
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
+const size = { width: 1200, height: 630 };
 
 export async function generateStaticParams() {
   return (await listSlugs()).map((slug) => ({ slug }));
+}
+
+/** One image per page; generateImageMetadata lets the alt text come from the page's SEO title. */
+export async function generateImageMetadata({ params }: { params: { slug: string } | Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const page = await getPage(slug);
+  return [{ id: "og", alt: page?.seo.title ?? "Page Blocks", size, contentType: "image/png" }];
 }
 
 /** Generated at build time from the page title, description and theme accent. */

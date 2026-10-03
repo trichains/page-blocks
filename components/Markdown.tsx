@@ -1,4 +1,5 @@
 import { Fragment, type ReactNode } from "react";
+import { externalLinkProps } from "@/blocks/ui";
 import { parseMarkdown, type MdInline } from "@/lib/markdown";
 
 /** Renders the markdown subset as React elements. No dangerouslySetInnerHTML anywhere. */
@@ -54,19 +55,17 @@ function renderInline(nodes: MdInline[]): ReactNode {
             {node.value}
           </code>
         );
-      case "link": {
-        const external = /^https?:\/\//i.test(node.href);
+      case "link":
         return (
           <a
             key={i}
             href={node.href}
             className="text-pb-accent underline underline-offset-4"
-            {...(external ? { rel: "noopener noreferrer nofollow", target: "_blank" } : {})}
+            {...externalLinkProps(node.href)}
           >
             {renderInline(node.children)}
           </a>
         );
-      }
     }
   });
 }

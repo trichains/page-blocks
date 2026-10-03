@@ -21,7 +21,8 @@ export const richTextBlock = defineBlock({
   }),
   example: {
     heading: "About this offer",
-    markdown: "Write **plain, specific** copy.\n\n- One idea per bullet\n- Link to [details](https://example.com) when needed",
+    markdown:
+      "Write **plain, specific** copy.\n\n- One idea per bullet\n- Link to [details](https://example.com) when needed",
     width: "narrow",
   },
 });

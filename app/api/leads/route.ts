@@ -18,7 +18,9 @@ import { log } from "@/lib/server/log";
 const limiter = createRateLimiter({ limit: 5, windowMs: 60_000 });
 
 export async function POST(request: Request) {
-  const requestId = request.headers.get("x-request-id") ?? crypto.randomUUID();
+  // Reuse an upstream request id only if it looks like one; never echo arbitrary client input into logs.
+  const incomingId = request.headers.get("x-request-id");
+  const requestId = incomingId && /^[\w-]{1,64}$/.test(incomingId) ? incomingId : crypto.randomUUID();
   const headers = { "x-request-id": requestId };
   const ip = clientIp(request.headers);
 
