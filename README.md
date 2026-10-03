@@ -19,13 +19,13 @@ Page Blocks sits in between. A page is a JSON file in the repo, checked by a sch
 ## What it does
 
 - **12 typed blocks**: `hero`, `logos`, `features`, `video`, `testimonials`, `pricing`, `countdown`, `leadForm`, `faq`, `richText`, `cta`, `footer`. Each has a zod v4 schema, a renderer, editor metadata (label, icon, description) and a valid example used when it's added in the editor. Every block can be hidden on mobile or desktop.
-- **Page documents** (`content/pages/*.json`): `slug`, `title`, `locale` (`en` / `pt-BR`), `seo`, `theme` (accent, dark/light, radius, font pair), optional `tracking` rules and `blocks`, validated as a discriminated union with exported TypeScript types. Duplicate block ids, unknown block types, unsafe links (`javascript:`), remote images and invalid colors all fail validation with a readable path like `blocks[3].props.plans[1].cta.href`.
-- **Static rendering**: `/p/[slug]` uses `generateStaticParams`, `generateMetadata` (title, description, canonical, `noindex`, Open Graph) and a build-time `opengraph-image.tsx` drawn from the page title and accent color. Theme is applied through CSS variables on the page root. Images use `next/image` with `sizes` and either explicit `width`/`height` or a fixed `aspect-video` box (video poster), so media space is reserved and there's no layout shift.
+- **Page documents** (`content/pages/*.json`): `slug`, `title`, `locale` (`en` / `pt-BR`), `seo`, `theme` (accent, dark/light, radius, font pair), optional `tracking` rules and `blocks`, validated as a discriminated union with exported TypeScript types. Objects are strict, so a typo like `subheadine` is an error instead of being silently dropped. Duplicate block ids, unknown block types, `#anchor` links that don't match a block id on the page, unsafe links (`javascript:`), remote images and invalid colors all fail validation with a readable path like `blocks[3].props.plans[1].cta.href`.
+- **Static rendering**: `/p/[slug]` uses `generateStaticParams`, `generateMetadata` (title, description, canonical, `noindex`, Open Graph) and an `opengraph-image.tsx` drawn from the page title and accent color (rendered once, then served from cache, with the alt text taken from `seo.title`). Theme is applied through CSS variables on the page root. Images use `next/image` with `sizes` and either explicit `width`/`height` or a fixed `aspect-video` box (video poster), so media space is reserved and there's no layout shift.
 - **Client JS only where needed**: `video` shows a poster and a real `<button>`; the YouTube (`youtube-nocookie.com`) or Vimeo iframe is only created after a click, and nothing plays on load. `faq` is native `<details>/<summary>` with zero JavaScript. `countdown` supports a fixed deadline or an evergreen timer (N hours from the visitor's first visit, stored in a first-party cookie) and always says on the page which one it is.
 - **Editor** (`/editor/[slug]`): block list (add from the registry, reorder with up/down buttons or a drag handle, duplicate, delete), a property form generated from the block's zod schema with field-level errors, and a live preview with a mobile/desktop toggle. Tabs for Design, JSON (edit the raw document, applied only when it validates) and SEO (search snippet preview). Import JSON, Export JSON and Reset to published. Drafts persist in `localStorage`.
 - **Leads API** (`POST /api/leads`): zod validation, a check against the published form config (required fields, consent, `listId`, which fields are kept), a honeypot field that gets the same `201` answer as a real submission, per-IP rate limit, optional forward to `LEADS_WEBHOOK_URL` with a 5 s timeout, and structured JSON logs with a request id.
 - **Tracking**: a small `track(name, props)` helper plus one delegated listener. Any element with `data-track="..."` reports clicks (CTAs get `data-track="cta_click"` automatically), and pages can declare extra `view` / `click` / `submit` rules by CSS selector. Events go to `NEXT_PUBLIC_ANALYTICS_ENDPOINT` or the built-in `/api/events` sink, via `sendBeacon`. No tag manager needed.
-- **Demo content**: `launch` (product launch sales page with video, evergreen countdown, pricing, FAQ), `webinar` (pt-BR lead capture with a fixed-date countdown, form and testimonials) and `saas` (light theme, editorial fonts, features and pricing). All products and people in the demo are fictional.
+- **Demo content**: `launch` (product launch sales page with video, a fixed-date countdown, pricing, a note on where checkout would go, FAQ), `webinar` (pt-BR lead capture with an evergreen countdown, form and testimonials) and `saas` (light theme, editorial fonts, features, pricing and a trial sign-up form). All products and people in the demo are fictional.
 
 ## Architecture
 
@@ -53,14 +53,14 @@ flowchart LR
   S -.-> PUB["Publish in production:<br/>Server Action → PageRepository.save"]
 ```
 
-How a request flows: `/`, `/p/[slug]` and `/editor/[slug]` are prerendered at build time from `FileRepository`, so serving a page is serving a static file. At runtime the only server code is `POST /api/leads` (loads the published page to check the form config, then stores in memory or forwards to the webhook) and `POST /api/events`.
+How a request flows: `/`, `/p/[slug]` and `/editor/[slug]` are prerendered at build time from `FileRepository`, so serving a page is serving a static file. At runtime the only server code is `POST /api/leads` (loads the published page to check the form config, then stores in memory or forwards to the webhook) and `POST /api/events`, plus the OG image, which renders on its first request and is cached after that.
 
 The editor preview renders the same block components inside the editor's React tree instead of an iframe fed by `postMessage`. The blocks never touch request APIs, so they work as client components unchanged; the preview updates on every keystroke with no messaging layer, and `/p/[slug]` never has to read `searchParams` (which would make it dynamic). The catch is that media queries respond to the viewport, not to the preview box, so blocks use Tailwind container queries (`@3xl:`) against the page root. That's what makes the 390 px mobile toggle show the real mobile layout.
 
 ```
 app/
   p/[slug]/page.tsx              static page: generateStaticParams, generateMetadata
-  p/[slug]/opengraph-image.tsx   build-time OG image (ImageResponse)
+  p/[slug]/opengraph-image.tsx   OG image (ImageResponse, cached after first render)
   editor/[slug]/page.tsx         static shell + client-only editor
   api/leads/route.ts             POST lead, GET sandbox listing
   api/events/route.ts            tracking sink
@@ -94,6 +94,7 @@ The editor needs no changes: the new block shows up in "Add block" with a genera
 
 - **JSON in git, not a database.** Content changes are reviewed in pull requests, validated in CI and deployed with the code. The cost is that publishing needs a commit and a build. `PageRepository` is the seam: a CMS or database implementation plus a Server Action for "Publish" can replace `FileRepository` without touching blocks or routes.
 - **One schema, three uses.** The zod schema validates content files, types the renderer props (`z.infer`) and generates the editor form (`z.toJSONSchema` plus custom `.meta()` keys). Adding a field to a block updates all three.
+- **Strict documents and checked anchors.** Unknown keys fail validation, and every `#id` link has to point at a block on the same page. Content is reviewed by people, but typos in JSON are easy to miss; CI catches them instead.
 - **Server Components by default.** 9 of 12 blocks render to plain HTML. FAQ uses `<details>` instead of a JS accordion. The video iframe isn't loaded until someone asks for it.
 - **Container queries instead of an iframe preview.** A simpler editor and fully static pages; the trade-off is that blocks must use `@` breakpoints rather than `sm:`/`md:`.
 - **Markdown subset with an AST, not a sanitizer.** The parser knows a handful of constructs and outputs React elements, so raw HTML can't get through and there's no `dangerouslySetInnerHTML`. Links are limited to http(s), mailto, `#anchor` and `/path`.
@@ -119,7 +120,7 @@ npm run dev                  # http://localhost:3103
 | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `LEADS_WEBHOOK_URL`              | Forward each lead as JSON (`{ event: "lead.created", lead }`). When set, leads aren't kept in memory and `GET /api/leads` is disabled. |
 | `NEXT_PUBLIC_SITE_URL`           | Absolute URL for canonical links and OG images. Falls back to `VERCEL_PROJECT_PRODUCTION_URL`, then localhost.                         |
-| `NEXT_PUBLIC_ANALYTICS_ENDPOINT` | Where `track()` sends events. Defaults to `/api/events`.                                                                               |
+| `NEXT_PUBLIC_ANALYTICS_ENDPOINT` | Where `track()` sends events. Defaults to `/api/events`. When set, `GET /api/events` is disabled.                                      |
 
 Scripts:
 

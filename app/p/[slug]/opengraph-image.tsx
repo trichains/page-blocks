@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
 import { getPage, listSlugs } from "@/lib/content/pages";
 import { accentForeground, themeBackground, themeForeground } from "@/lib/theme";
@@ -15,15 +16,16 @@ export async function generateImageMetadata({ params }: { params: { slug: string
   return [{ id: "og", alt: page?.seo.title ?? "Page Blocks", size, contentType: "image/png" }];
 }
 
-/** Generated at build time from the page title, description and theme accent. */
+/** Drawn from the page title, description and theme accent; rendered once, then served from cache. */
 export default async function OpenGraphImage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const page = await getPage(slug);
-  const title = page?.seo.title ?? "Page Blocks";
-  const description = page?.seo.description ?? "";
-  const accent = page?.theme.accent ?? "#f2884b";
-  const bg = page ? themeBackground(page.theme) : "#0c0d10";
-  const fg = page ? themeForeground(page.theme) : "#f2f3f5";
+  if (!page) notFound();
+  const title = page.seo.title;
+  const description = page.seo.description;
+  const accent = page.theme.accent;
+  const bg = themeBackground(page.theme);
+  const fg = themeForeground(page.theme);
 
   return new ImageResponse(
     <div
@@ -41,7 +43,7 @@ export default async function OpenGraphImage({ params }: { params: Promise<{ slu
     >
       <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
         <div style={{ width: 20, height: 20, borderRadius: 4, background: accent }} />
-        <div style={{ fontSize: 28, opacity: 0.7 }}>{page?.title ?? "Page Blocks"}</div>
+        <div style={{ fontSize: 28, opacity: 0.7 }}>{page.title}</div>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
         <div style={{ fontSize: 68, fontWeight: 700, lineHeight: 1.08, letterSpacing: -1.5, maxWidth: 1000 }}>

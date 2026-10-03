@@ -19,13 +19,13 @@ O Page Blocks fica no meio do caminho. Uma página é um arquivo JSON no reposit
 ## O que ele faz
 
 - **12 blocos tipados**: `hero`, `logos`, `features`, `video`, `testimonials`, `pricing`, `countdown`, `leadForm`, `faq`, `richText`, `cta`, `footer`. Cada um tem um schema zod v4, um renderer, metadados para o editor (label, ícone, descrição) e um exemplo válido usado quando ele é adicionado no editor. Qualquer bloco pode ser escondido no mobile ou no desktop.
-- **Documentos de página** (`content/pages/*.json`): `slug`, `title`, `locale` (`en` / `pt-BR`), `seo`, `theme` (cor de destaque, dark/light, raio, par de fontes), regras opcionais de `tracking` e `blocks`, validados como uma discriminated union com tipos TypeScript exportados. IDs de bloco duplicados, tipos de bloco desconhecidos, links inseguros (`javascript:`), imagens remotas e cores inválidas falham na validação com um caminho legível como `blocks[3].props.plans[1].cta.href`.
-- **Renderização estática**: `/p/[slug]` usa `generateStaticParams`, `generateMetadata` (título, descrição, canonical, `noindex`, Open Graph) e um `opengraph-image.tsx` gerado no build a partir do título da página e da cor de destaque. O tema é aplicado com variáveis CSS na raiz da página. As imagens usam `next/image` com `sizes` e `width`/`height` explícitos ou uma caixa fixa `aspect-video` (poster do vídeo), então o espaço da mídia fica reservado e não há layout shift.
+- **Documentos de página** (`content/pages/*.json`): `slug`, `title`, `locale` (`en` / `pt-BR`), `seo`, `theme` (cor de destaque, dark/light, raio, par de fontes), regras opcionais de `tracking` e `blocks`, validados como uma discriminated union com tipos TypeScript exportados. Os objetos são estritos, então um erro de digitação como `subheadine` vira erro em vez de ser descartado em silêncio. IDs de bloco duplicados, tipos de bloco desconhecidos, links `#anchor` que não batem com nenhum ID de bloco da página, links inseguros (`javascript:`), imagens remotas e cores inválidas falham na validação com um caminho legível como `blocks[3].props.plans[1].cta.href`.
+- **Renderização estática**: `/p/[slug]` usa `generateStaticParams`, `generateMetadata` (título, descrição, canonical, `noindex`, Open Graph) e um `opengraph-image.tsx` desenhado a partir do título da página e da cor de destaque (renderizado uma vez e depois servido do cache, com o texto alternativo vindo de `seo.title`). O tema é aplicado com variáveis CSS na raiz da página. As imagens usam `next/image` com `sizes` e `width`/`height` explícitos ou uma caixa fixa `aspect-video` (poster do vídeo), então o espaço da mídia fica reservado e não há layout shift.
 - **JS no cliente só onde precisa**: `video` mostra um poster e um `<button>` de verdade; o iframe do YouTube (`youtube-nocookie.com`) ou do Vimeo só é criado depois de um clique, e nada toca ao carregar. `faq` é `<details>/<summary>` nativo, sem nenhum JavaScript. `countdown` aceita um prazo fixo ou um timer evergreen (N horas a partir da primeira visita, guardado num cookie first-party) e sempre informa na página qual dos dois está em uso.
 - **Editor** (`/editor/[slug]`): lista de blocos (adicionar a partir do registry, reordenar com botões de subir/descer ou por arrastar, duplicar, excluir), formulário de propriedades gerado a partir do schema zod do bloco com erros por campo, e preview ao vivo com alternância mobile/desktop. Abas Design, JSON (edita o documento bruto, aplicado só quando valida) e SEO (preview do resultado de busca). Import JSON, Export JSON e Reset to published. Os rascunhos ficam salvos no `localStorage`.
 - **API de leads** (`POST /api/leads`): validação com zod, conferência contra a configuração publicada do formulário (campos obrigatórios, consentimento, `listId`, quais campos são guardados), campo honeypot que recebe a mesma resposta `201` de um envio real, rate limit por IP, encaminhamento opcional para `LEADS_WEBHOOK_URL` com timeout de 5 s e logs JSON estruturados com request id.
 - **Tracking**: um helper pequeno `track(name, props)` mais um único listener delegado. Qualquer elemento com `data-track="..."` registra cliques (os CTAs ganham `data-track="cta_click"` automaticamente), e as páginas podem declarar regras extras de `view` / `click` / `submit` por seletor CSS. Os eventos vão para `NEXT_PUBLIC_ANALYTICS_ENDPOINT` ou para o endpoint embutido `/api/events`, via `sendBeacon`. Sem precisar de tag manager.
-- **Conteúdo de demonstração**: `launch` (página de vendas de lançamento com vídeo, countdown evergreen, preços, FAQ), `webinar` (captura de leads em pt-BR com countdown de data fixa, formulário e depoimentos) e `saas` (tema claro, fontes editoriais, features e preços). Todos os produtos e pessoas da demo são fictícios.
+- **Conteúdo de demonstração**: `launch` (página de vendas de lançamento com vídeo, countdown de data fixa, preços, uma nota sobre onde entraria o checkout, FAQ), `webinar` (captura de leads em pt-BR com countdown evergreen, formulário e depoimentos) e `saas` (tema claro, fontes editoriais, features, preços e formulário de cadastro no trial). Todos os produtos e pessoas da demo são fictícios.
 
 ## Arquitetura
 
@@ -53,14 +53,14 @@ flowchart LR
   S -.-> PUB["Publish in production:<br/>Server Action → PageRepository.save"]
 ```
 
-Como uma requisição flui: `/`, `/p/[slug]` e `/editor/[slug]` são pré-renderizados no build a partir do `FileRepository`, então servir uma página é servir um arquivo estático. Em runtime, o único código de servidor é o `POST /api/leads` (carrega a página publicada para conferir a configuração do formulário e depois guarda em memória ou encaminha para o webhook) e o `POST /api/events`.
+Como uma requisição flui: `/`, `/p/[slug]` e `/editor/[slug]` são pré-renderizados no build a partir do `FileRepository`, então servir uma página é servir um arquivo estático. Em runtime, o único código de servidor é o `POST /api/leads` (carrega a página publicada para conferir a configuração do formulário e depois guarda em memória ou encaminha para o webhook) e o `POST /api/events`, além da imagem OG, que é renderizada na primeira requisição e fica em cache depois disso.
 
 O preview do editor renderiza os mesmos componentes de bloco dentro da árvore React do editor, em vez de um iframe alimentado por `postMessage`. Os blocos nunca usam APIs de request, então funcionam como client components sem nenhuma mudança; o preview atualiza a cada tecla sem camada de mensagens, e `/p/[slug]` nunca precisa ler `searchParams` (o que deixaria a rota dinâmica). O porém é que media queries respondem ao viewport, não à caixa do preview, então os blocos usam container queries do Tailwind (`@3xl:`) em relação à raiz da página. É isso que faz a alternância mobile de 390 px mostrar o layout mobile de verdade.
 
 ```
 app/
   p/[slug]/page.tsx              static page: generateStaticParams, generateMetadata
-  p/[slug]/opengraph-image.tsx   build-time OG image (ImageResponse)
+  p/[slug]/opengraph-image.tsx   OG image (ImageResponse, cached after first render)
   editor/[slug]/page.tsx         static shell + client-only editor
   api/leads/route.ts             POST lead, GET sandbox listing
   api/events/route.ts            tracking sink
@@ -94,6 +94,7 @@ O editor não precisa de mudança: o novo bloco aparece em "Add block" com um fo
 
 - **JSON no git, não num banco de dados.** Mudanças de conteúdo são revisadas em pull requests, validadas no CI e publicadas junto com o código. O custo é que publicar exige um commit e um build. `PageRepository` é o ponto de troca: uma implementação com CMS ou banco mais uma Server Action para o "Publish" pode substituir o `FileRepository` sem mexer nos blocos nem nas rotas.
 - **Um schema, três usos.** O schema zod valida os arquivos de conteúdo, tipa as props do renderer (`z.infer`) e gera o formulário do editor (`z.toJSONSchema` mais chaves customizadas de `.meta()`). Adicionar um campo num bloco atualiza os três.
+- **Documentos estritos e âncoras conferidas.** Chaves desconhecidas falham na validação, e todo link `#id` precisa apontar para um bloco da mesma página. O conteúdo é revisado por pessoas, mas erro de digitação em JSON passa fácil; o CI pega antes.
 - **Server Components por padrão.** 9 dos 12 blocos viram HTML puro. O FAQ usa `<details>` em vez de um accordion em JS. O iframe do vídeo só carrega quando alguém pede.
 - **Container queries em vez de um preview em iframe.** Editor mais simples e páginas totalmente estáticas; o trade-off é que os blocos precisam usar breakpoints `@` em vez de `sm:`/`md:`.
 - **Subconjunto de markdown com AST, não um sanitizer.** O parser conhece um punhado de construções e gera elementos React, então HTML bruto não passa e não existe `dangerouslySetInnerHTML`. Links ficam limitados a http(s), mailto, `#anchor` e `/path`.
@@ -119,7 +120,7 @@ npm run dev                  # http://localhost:3103
 | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `LEADS_WEBHOOK_URL`              | Encaminha cada lead como JSON (`{ event: "lead.created", lead }`). Quando definida, os leads não ficam em memória e o `GET /api/leads` é desativado. |
 | `NEXT_PUBLIC_SITE_URL`           | URL absoluta para links canonical e imagens OG. Se vazia, usa `VERCEL_PROJECT_PRODUCTION_URL` e depois localhost.                                    |
-| `NEXT_PUBLIC_ANALYTICS_ENDPOINT` | Para onde o `track()` envia os eventos. O padrão é `/api/events`.                                                                                    |
+| `NEXT_PUBLIC_ANALYTICS_ENDPOINT` | Para onde o `track()` envia os eventos. O padrão é `/api/events`. Quando definida, o `GET /api/events` é desativado.                                 |
 
 Scripts:
 
