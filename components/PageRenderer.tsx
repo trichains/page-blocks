@@ -43,16 +43,17 @@ export function PageRenderer({
       className="@container min-h-full bg-pb-bg font-body text-pb-fg antialiased"
       data-page={slug}
     >
+      {/* Index in the key: the editor can briefly hold duplicate ids while someone is typing. */}
       {blocks.map((block, index) => {
-        if ("invalid" in block) return <div key={block.id}>{renderInvalid?.(block)}</div>;
+        if ("invalid" in block) return <div key={`${index}:${block.id}`}>{renderInvalid?.(block)}</div>;
         const cls = visibilityClass(block);
         const content = <RenderBlock block={block} ctx={{ pageSlug: slug, locale, mode, index }} />;
         return cls ? (
-          <div key={block.id} className={cls}>
+          <div key={`${index}:${block.id}`} className={cls}>
             {content}
           </div>
         ) : (
-          <Fragment key={block.id}>{content}</Fragment>
+          <Fragment key={`${index}:${block.id}`}>{content}</Fragment>
         );
       })}
     </div>

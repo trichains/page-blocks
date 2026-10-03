@@ -37,6 +37,7 @@ export function Editor({ published }: { published: PageDocument }) {
   const fileInput = useRef<HTMLInputElement>(null);
   // Bumped when the draft is replaced from outside the JSON tab (import/reset) to remount it.
   const [revision, setRevision] = useState(0);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const validation = useMemo(() => validateDraft(page), [page]);
   const isDirty = useMemo(() => JSON.stringify(page) !== JSON.stringify(published), [page, published]);
@@ -99,7 +100,6 @@ export function Editor({ published }: { published: PageDocument }) {
     }
     dispatch({ type: "replace", page: json as DraftPage });
     setRevision((r) => r + 1);
-    setRevision((r) => r + 1);
     setSelection({ kind: "block", index: 0 });
     setNotice({ tone: "info", text: `Imported ${file.name}.` });
   }
@@ -107,7 +107,6 @@ export function Editor({ published }: { published: PageDocument }) {
   function resetToPublished() {
     if (!window.confirm("Discard the local draft and go back to the published version?")) return;
     dispatch({ type: "replace", page: structuredClone(publishedDraft) });
-    setRevision((r) => r + 1);
     setRevision((r) => r + 1);
     clearDraft(page.slug);
     setSelection({ kind: "block", index: 0 });
@@ -203,7 +202,28 @@ export function Editor({ published }: { published: PageDocument }) {
 
       <div className="grid flex-1 xl:min-h-0 xl:grid-cols-[minmax(560px,640px)_1fr]">
         <div className="flex min-h-0 flex-col border-b border-app-border xl:border-r xl:border-b-0">
-          <div role="tablist" aria-label="Editor views" className="flex gap-1 border-b border-app-border px-2 pt-2">
+          <div
+            role="tablist"
+            aria-label="Editor views"
+            className="flex gap-1 border-b border-app-border px-2 pt-2"
+            onKeyDown={(e) => {
+              const i = tabs.findIndex((t) => t.id === tab);
+              const next =
+                e.key === "ArrowRight"
+                  ? (i + 1) % tabs.length
+                  : e.key === "ArrowLeft"
+                    ? (i - 1 + tabs.length) % tabs.length
+                    : e.key === "Home"
+                      ? 0
+                      : e.key === "End"
+                        ? tabs.length - 1
+                        : -1;
+              if (next === -1) return;
+              e.preventDefault();
+              setTab(tabs[next].id);
+              document.getElementById(`tab-${tabs[next].id}`)?.focus();
+            }}
+          >
             {tabs.map((t) => (
               <button
                 key={t.id}
@@ -211,7 +231,8 @@ export function Editor({ published }: { published: PageDocument }) {
                 type="button"
                 role="tab"
                 aria-selected={tab === t.id}
-                aria-controls={`panel-${t.id}`}
+                aria-controls={tab === t.id ? `panel-${t.id}` : undefined}
+                tabIndex={tab === t.id ? 0 : -1}
                 onClick={() => setTab(t.id)}
                 className={`rounded-t-md border-b-2 px-3 py-1.5 text-sm ${tab === t.id ? "border-app-accent text-app-fg" : "border-transparent text-app-muted hover:text-app-fg"}`}
               >
@@ -277,7 +298,8 @@ export function Editor({ published }: { published: PageDocument }) {
                       />
                       <details
                         className="mt-6 rounded-md border border-app-border p-3"
-                        open={Boolean(Object.keys(validation.blockSettingsErrors[sel.index] ?? {}).length)}
+                        open={settingsOpen || Object.keys(validation.blockSettingsErrors[sel.index] ?? {}).length > 0}
+                        onToggle={(e) => setSettingsOpen(e.currentTarget.open)}
                       >
                         <summary className="cursor-pointer text-xs font-semibold text-app-muted">
                           Block settings

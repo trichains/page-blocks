@@ -11,7 +11,10 @@ import type { DraftPage } from "./state";
 export function JsonPanel({ page, onApply }: { page: DraftPage; onApply: (page: DraftPage) => void }) {
   const [text, setText] = useState(() => JSON.stringify(page, null, 2));
   const [syntaxError, setSyntaxError] = useState<string | null>(null);
-  const [issues, setIssues] = useState<ValidationIssue[]>([]);
+  const [issues, setIssues] = useState<ValidationIssue[]>(() => {
+    const result = validatePage(page);
+    return result.ok ? [] : result.issues;
+  });
 
   const onChange = (next: string) => {
     setText(next);

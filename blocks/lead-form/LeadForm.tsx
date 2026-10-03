@@ -71,11 +71,19 @@ export function LeadForm({ id, props, ctx }: BlockRenderProps<"leadForm">) {
         </h2>
         {props.text ? <p className="mt-3 leading-relaxed text-pb-muted text-pretty">{props.text}</p> : null}
 
-        {status.kind === "success" ? (
-          <p role="status" className="mt-6 rounded-pb border border-pb-accent px-4 py-4 leading-relaxed">
-            {props.successMessage}
-          </p>
-        ) : (
+        {/* Live region stays mounted so screen readers announce the message when it appears. */}
+        <div role="status" aria-live="polite">
+          {status.kind === "success" ? (
+            <p
+              ref={(el) => el?.focus()}
+              tabIndex={-1}
+              className="mt-6 rounded-pb border border-pb-accent px-4 py-4 leading-relaxed focus:outline-none"
+            >
+              {props.successMessage}
+            </p>
+          ) : null}
+        </div>
+        {status.kind === "success" ? null : (
           <form
             className="mt-6 space-y-4"
             onSubmit={onSubmit}
@@ -125,11 +133,20 @@ export function LeadForm({ id, props, ctx }: BlockRenderProps<"leadForm">) {
                   name="consent"
                   type="checkbox"
                   required
+                  aria-invalid={fieldErrors.consent ? true : undefined}
+                  aria-describedby={fieldErrors.consent ? `${uid}-consent-error` : undefined}
                   className="mt-1 size-4 shrink-0 accent-[var(--pb-accent)]"
                 />
-                <label htmlFor={`${uid}-consent`} className="text-sm leading-relaxed text-pb-muted">
-                  {props.consentText}
-                </label>
+                <div>
+                  <label htmlFor={`${uid}-consent`} className="text-sm leading-relaxed text-pb-muted">
+                    {props.consentText}
+                  </label>
+                  {fieldErrors.consent ? (
+                    <p id={`${uid}-consent-error`} className="mt-1 text-sm text-red-500">
+                      {t(ctx.locale, "consentRequired")}
+                    </p>
+                  ) : null}
+                </div>
               </div>
             ) : null}
 

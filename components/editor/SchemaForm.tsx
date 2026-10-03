@@ -160,7 +160,8 @@ function StringField({ schema, value, path, label, required, errors, idPrefix, o
   const text = typeof value === "string" ? value : "";
   const multiline =
     schema.multiline || (!schema.pattern && !schema.format && (schema.maxLength ?? 0) > TEXTAREA_THRESHOLD);
-  const counter = schema.maxLength && schema.maxLength >= 60 ? `${text.length}/${schema.maxLength}` : undefined;
+  const counter =
+    schema.maxLength && schema.maxLength >= 60 && !schema.pattern ? `${text.length}/${schema.maxLength}` : undefined;
   const common = {
     id,
     value: text,
@@ -265,6 +266,7 @@ function BooleanField({ schema, value, path, label, errors, idPrefix, onChange }
           role="switch"
           aria-checked={checked}
           aria-labelledby={`${id}-label`}
+          aria-describedby={error ? `${id}-error` : undefined}
           onClick={() => onChange(!checked)}
           className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-app-accent ${
             checked ? "border-app-accent bg-app-accent" : "border-app-border bg-app-raised"
@@ -275,7 +277,12 @@ function BooleanField({ schema, value, path, label, errors, idPrefix, onChange }
           />
         </button>
       </div>
-      {error ? <p className="mt-1 text-xs text-app-danger">{error}</p> : null}
+      {schema.description && !error ? <p className="mt-1 text-xs text-app-muted">{schema.description}</p> : null}
+      {error ? (
+        <p id={`${id}-error`} className="mt-1 text-xs text-app-danger">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -457,12 +464,17 @@ function ArrayField({ schema, value, path, label, required, errors, idPrefix, on
                 type="text"
                 value={typeof item === "string" ? item : ""}
                 aria-invalid={itemError ? true : undefined}
+                aria-describedby={itemError ? `${id}-error` : undefined}
                 onChange={(e) => update(items.map((it, j) => (j === i ? e.target.value : it)))}
                 className={inputClass}
               />
               {controls}
             </div>
-            {itemError ? <p className="mt-1 text-xs text-app-danger">{itemError}</p> : null}
+            {itemError ? (
+              <p id={`${id}-error`} className="mt-1 text-xs text-app-danger">
+                {itemError}
+              </p>
+            ) : null}
           </div>
         );
       })}

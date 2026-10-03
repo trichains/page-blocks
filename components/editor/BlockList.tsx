@@ -37,7 +37,12 @@ export function BlockList({
   const move = (from: number, to: number) => {
     if (to < 0 || to >= blocks.length) return;
     dispatch({ type: "moveBlock", from, to });
-    if (selectedIndex === from) onSelect({ kind: "block", index: to });
+    // Keep the same block selected when it, or a neighbour, moves.
+    let next = selectedIndex;
+    if (selectedIndex === from) next = to;
+    else if (from < selectedIndex && selectedIndex <= to) next = selectedIndex - 1;
+    else if (to <= selectedIndex && selectedIndex < from) next = selectedIndex + 1;
+    if (next !== selectedIndex) onSelect({ kind: "block", index: next });
   };
 
   return (
@@ -100,12 +105,15 @@ export function BlockList({
 
         <ol aria-label="Page blocks" className="space-y-1">
           {blocks.map((block, i) => {
+            // Stable keys keep keyboard focus on the moved item; the suffix only appears for duplicate ids.
+            const dupes = blocks.slice(0, i).filter((b) => b.id === block.id).length;
+            const key = dupes ? `${block.id}~${dupes}` : block.id;
             const def = getBlockDefinition(block.type);
             const label = def?.meta.label ?? block.type;
             const selected = i === selectedIndex;
             return (
               <li
-                key={`${block.id}-${i}`}
+                key={key}
                 draggable
                 onDragStart={(e) => {
                   setDragFrom(i);
@@ -130,7 +138,7 @@ export function BlockList({
                 }}
                 className={`group rounded-md border ${
                   selected ? "border-app-accent bg-app-raised" : "border-transparent hover:bg-app-raised/60"
-                } ${dropAt === i && dragFrom !== i ? "border-t-app-accent border-t-2" : ""} ${dragFrom === i ? "opacity-50" : ""}`}
+                } ${dropAt === i && dragFrom !== null && dragFrom !== i ? (dragFrom < i ? "border-b-2 border-b-app-accent" : "border-t-2 border-t-app-accent") : ""} ${dragFrom === i ? "opacity-50" : ""}`}
               >
                 <div className="flex items-center gap-1 px-1 py-1">
                   <span

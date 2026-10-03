@@ -27,6 +27,8 @@ export function Video({ id, props, ctx }: BlockRenderProps<"video">) {
       <div className="relative aspect-video w-full overflow-hidden rounded-pb border border-pb-border bg-pb-surface">
         {playing && source ? (
           <iframe
+            // Move focus from the (now removed) play button to the player.
+            ref={(el) => el?.focus()}
             src={embedUrl(source)}
             title={props.title}
             className="absolute inset-0 size-full"
